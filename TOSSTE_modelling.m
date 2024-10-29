@@ -12,12 +12,14 @@
 % Script to play around with modelling the TOSSTE data
 close all; clear;
 
-scriptpath = which(mfilename);
-rootdir = scriptpath(1:find(scriptpath == '\',1,'last'));
+% scriptpath = which(mfilename);
+% rootdir = scriptpath(1:find(scriptpath == '\',1,'last'));
 
-cd (rootdir)
+% cd (rootdir)
 
-addpath(genpath(rootdir));%,'ReinfLearn')); % modelling code
+% addpath(genpath(rootdir));%,'ReinfLearn')); % modelling code
+
+addpath([pwd, '\custom hgf']);
 
 %%add your HGF script folder to path
 % GenScriptsFolder = 'P:\Projects\General Scripts';
