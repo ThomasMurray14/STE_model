@@ -73,6 +73,8 @@ prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
 obs_model_config = m1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 
+optim_config.nRandInit = 5;
+
 %prc_model_config = tapas_align_priors(prc_model_config);
 
 %% simulate responses
