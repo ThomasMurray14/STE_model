@@ -35,7 +35,7 @@ sub_data = readtable('10369536_A_Safe.csv');
 sub_data.p_sad = sub_data.Outcome_p_sad/100;
 state = double(sub_data.Cue_idx == sub_data.Outcome_idx);
 u_al = sub_data.p_sad;
-tr_temp = or((state ==1 & sub_data.Outcome_idx== 0), (state == 0 & sub_data.Outcome_idx ==1));
+tr_temp = or((state ==1 & sub_data.Outcome_idx== 0), (state == 0 & sub_data.Outcome_idx == 1));
 u_al(tr_temp) = 1 - sub_data.p_sad(tr_temp);
 
 sub_data.u_al = u_al;
@@ -156,6 +156,7 @@ for i_file=1:numel(STE_files)
 end
 
 
+sum(cellfun(@isempty, {model_fits.est})) % N with no fit
 
 
 
