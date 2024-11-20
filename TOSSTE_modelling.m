@@ -74,12 +74,35 @@ optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 
 optim_config.nRandInit = 5;
 
-%prc_model_config = tapas_align_priors(prc_model_config);
+
 
 %% simulate responses
+
+
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = tapas_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
+
+
+prc_params(1); %mu_0mu(1)
+prc_params(2); %mu_0mu(2)
+prc_params(3); %mu_0mu(3)
+prc_params(4); %logsa_0mu(1);
+prc_params(5); %logsa_0mu(2);
+prc_params(6); %logsa_0mu(3);
+prc_params(7); %rho(1);
+prc_params(8); %rho(2);
+prc_params(9); %rho(3);
+prc_params(10); %logkamu(1);
+prc_params(11); %logkamu(2);
+prc_params(12); %ommu(1);
+prc_params(13); %ommu(2);
+prc_params(14); %ommu(3);
+prc_params(15) = 0.2; %logalmu;
+prc_params(16); %eta0mu;
+prc_params(17); %eta1mu;
+
+
 
 obs_params = obs_model_config.priormus;
 obs_params(1) = exp(obs_params(1));
@@ -92,12 +115,17 @@ sim = tapas_simModel(u,...%[u;u;u;u],...
     obs_params,...
     123456789);
 
+tapas_ehgf_binary_tbt_plotTraj(sim);
+
 %% plot
 close all;
 % tapas_ehgf_binary_tbt_plotTraj(sim)
 
 
 %% recover parameters
+
+prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
+
 est = tapas_fitModel(...
     sim.y,...
     sim.u,...
@@ -120,7 +148,7 @@ data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
 model_fits = repmat(struct(), numel(STE_files), 1);
 
-for i_file=1:numel(STE_files)
+for i_file=1:30;%numel(STE_files)
     fname = STE_files(i_file).name;
     fprintf('\n%s\n', fname);
     sub_data = readtable(fullfile(data_dir, fname));
@@ -131,14 +159,15 @@ for i_file=1:numel(STE_files)
     % prepare data
     sub_data.p_sad = sub_data.Outcome_p_sad/100;
     sub_data.u_al = u_al; % these are the same across everyone
-    sub_data.state=state;
+    sub_data.state = state;
 
     sub_data.logRT = log(sub_data.Response_RT);
     sub_data = sub_data(~isnan(sub_data.logRT),:);    % remove nans 
     sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
     
     
-    y = [sub_data.correct,sub_data.logRT];
+    y = [sub_data.correct, sub_data.logRT];
+    model_fits(i_file).y = y;
     
     % fit data
     try
@@ -155,6 +184,23 @@ for i_file=1:numel(STE_files)
     end
 end
 
+
+%%
+
+% What the shit is going on. When there are <192 trials (i.e. if ptp missed
+% a response) then model gets fit. If ptp responded to all trials, model
+% does not get fit......
+
+model_fits = model_fits(1:30);
+
+is_192 = [];
+is_est = [];
+for i=1:30
+    is_192 = [is_192, size(model_fits(i).y, 1) == 192];
+    is_est = [is_est, ~isempty(model_fits(i).est)];
+end
+
+[~is_192', is_est']
 
 sum(cellfun(@isempty, {model_fits.est})) % N with no fit
 
