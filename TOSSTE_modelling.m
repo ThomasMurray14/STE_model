@@ -98,7 +98,7 @@ prc_params(11); %logkamu(2);
 prc_params(12); %ommu(1);
 prc_params(13); %ommu(2);
 prc_params(14); %ommu(3);
-prc_params(15) = 0.2; %logalmu;
+prc_params(15) = 0.02; %logalmu;
 prc_params(16); %eta0mu;
 prc_params(17); %eta1mu;
 
@@ -148,7 +148,7 @@ data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
 model_fits = repmat(struct(), numel(STE_files), 1);
 
-for i_file=1:30;%numel(STE_files)
+for i_file=1:numel(STE_files)
     fname = STE_files(i_file).name;
     fprintf('\n%s\n', fname);
     sub_data = readtable(fullfile(data_dir, fname));
@@ -187,23 +187,32 @@ end
 
 
 %%
+sum(cellfun(@isempty, {model_fits.est})) % N with no fit
 
-% What the shit is going on. When there are <192 trials (i.e. if ptp missed
-% a response) then model does not get fit. If ptp responded to all trials, 
-% model gets fit......
 
-model_fits = model_fits(1:30);
+%%
+IDs = unique(cellfun(@str2double, {model_fits.ID}));
+conds = {'Safe', 'Threat'};
+var_names = {'ID', 'group', 'S_om2', 'S_al', 'S_rho', 'T_om2', 'T_al', 'T_rho'};
+var_types = {'double', 'string', 'double','double','double','double','double','double'};
+parameter_fits = table(...
+    'Size', [numel(IDs), numel(var_names)],...
+    'VariableNames', var_names,...
+    'VariableTypes', var_types);
 
-is_192 = [];
-is_est = [];
-for i=1:30
-    is_192 = [is_192, size(model_fits(i).y, 1) == 192];
-    is_est = [is_est, ~isempty(model_fits(i).est)];
+for i=1:numel(IDs)
+    sub_fits = model_fits(strcmp(num2str(IDs(i)), {model_fits.ID}));
+    parameter_fits(i, 'ID') = {IDs(i)};
+    parameter_fits(i, 'group') = {sub_fits(1).group};
+    for c=1:2
+        cond_fit = sub_fits(strcmp({sub_fits.condition}, conds{c}));
+        parameter_fits(i, [conds{c}(1), '_om2']) = {cond_fit.est.p_prc.om(2)};
+        parameter_fits(i, [conds{c}(1), '_al']) = {cond_fit.est.p_prc.al};
+        parameter_fits(i, [conds{c}(1), '_rho']) = {cond_fit.est.p_prc.rho(2)};
+    end
 end
 
-[~is_192', is_est']
-
-sum(cellfun(@isempty, {model_fits.est})) % N with no fit
+writetable(parameter_fits, 'parameter_fits.csv');
 
 
 
