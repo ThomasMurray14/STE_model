@@ -148,7 +148,7 @@ data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
 model_fits = repmat(struct(), numel(STE_files), 1);
 
-for i_file=1:30;%numel(STE_files)
+for i_file=1;%:30;%numel(STE_files)
     fname = STE_files(i_file).name;
     fprintf('\n%s\n', fname);
     sub_data = readtable(fullfile(data_dir, fname));
@@ -167,14 +167,15 @@ for i_file=1:30;%numel(STE_files)
     
     
     y = [sub_data.correct, sub_data.logRT];
-    u_sub = u(~isnan(sub_data.logRT),:);
+    u_sub = u;
+    u_sub()
     model_fits(i_file).y = y;
     
     % fit data
     try
         est = tapas_fitModel(...
             y,... %,confidence],...
-            u_sub,...
+            u,...
             prc_model_config,...
             obs_model_config,...
             optim_config);
