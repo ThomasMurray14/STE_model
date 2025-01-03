@@ -61,14 +61,14 @@ prc_params(4); %logsa_0mu(1);
 prc_params(5); %logsa_0mu(2);
 prc_params(6); %logsa_0mu(3);
 prc_params(7); %rho(1);
-prc_params(8); %rho(2);
+prc_params(8) = 0; %rho(2);
 prc_params(9); %rho(3);
 prc_params(10); %logkamu(1);
 prc_params(11); %logkamu(2);
 prc_params(12); %ommu(1);
 prc_params(13); %ommu(2);
 prc_params(14); %ommu(3);
-prc_params(15) = 0.02; %logalmu;
+prc_params(15) = 0.002; %logalmu;
 prc_params(16); %eta0mu;
 prc_params(17); %eta1mu;
 
@@ -84,12 +84,11 @@ sim = tapas_simModel(u,...%[u;u;u;u],...
     obs_params,...
     123456789);
 
-prc1_ehgf_binary_tbt_plotTraj(sim);
-
+% prc1_ehgf_binary_tbt_plotTraj(sim);
 
 % visualise psychometric
 sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-figure('name', 'simulated psychometric'); hold on;
+% figure('name', 'simulated psychometric'); hold on;
 plot(0:20:100, sim_psychometric, 'linewidth', 3);
 set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
 
@@ -103,10 +102,6 @@ close all;
 
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
 
-% prc_model_config.eta0sa=2;
-% prc_model_config.eta1sa=2;
-% prc_model_config.priorsas(16)=prc_model_config.eta0sa;
-% prc_model_config.priorsas(17)=prc_model_config.eta1sa;
 
 est = tapas_fitModel(...
     sim.y,...
