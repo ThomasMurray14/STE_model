@@ -69,6 +69,10 @@ y = [sub_data.correct,sub_data.logRT];
 
 %% Get configuration structures
 prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
+% prc_model_config.eta0sa=2;
+% prc_model_config.eta1sa=2;
+% prc_model_config.priorsas(16)=prc_model_config.eta0sa;
+% prc_model_config.priorsas(17)=prc_model_config.eta1sa;
 obs_model_config = m1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 
@@ -126,6 +130,11 @@ close all;
 
 prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
 
+% prc_model_config.eta0sa=2;
+% prc_model_config.eta1sa=2;
+% prc_model_config.priorsas(16)=prc_model_config.eta0sa;
+% prc_model_config.priorsas(17)=prc_model_config.eta1sa;
+
 est = tapas_fitModel(...
     sim.y,...
     sim.u,...
@@ -140,7 +149,15 @@ est = tapas_fitModel(...
 
 %% fit real data 
 
+close all;
+
 prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
+
+% prc_model_config.eta0sa=2;
+% prc_model_config.eta1sa=2;
+% prc_model_config.priorsas(16)=prc_model_config.eta0sa;
+% prc_model_config.priorsas(17)=prc_model_config.eta1sa;
+
 obs_model_config = m1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 
@@ -148,7 +165,8 @@ data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
 model_fits = repmat(struct(), numel(STE_files), 1);
 
-for i_file=1:numel(STE_files)
+
+for i_file=1:5%numel(STE_files)
     fname = STE_files(i_file).name;
     fprintf('\n%s\n', fname);
     sub_data = readtable(fullfile(data_dir, fname));
@@ -190,29 +208,69 @@ end
 sum(cellfun(@isempty, {model_fits.est})) % N with no fit
 
 
-%%
-IDs = unique(cellfun(@str2double, {model_fits.ID}));
-conds = {'Safe', 'Threat'};
-var_names = {'ID', 'group', 'S_om2', 'S_al', 'S_rho', 'T_om2', 'T_al', 'T_rho'};
-var_types = {'double', 'string', 'double','double','double','double','double','double'};
-parameter_fits = table(...
-    'Size', [numel(IDs), numel(var_names)],...
-    'VariableNames', var_names,...
-    'VariableTypes', var_types);
+%% Visualise psychometric
 
-for i=1:numel(IDs)
-    sub_fits = model_fits(strcmp(num2str(IDs(i)), {model_fits.ID}));
-    parameter_fits(i, 'ID') = {IDs(i)};
-    parameter_fits(i, 'group') = {sub_fits(1).group};
-    for c=1:2
-        cond_fit = sub_fits(strcmp({sub_fits.condition}, conds{c}));
-        parameter_fits(i, [conds{c}(1), '_om2']) = {cond_fit.est.p_prc.om(2)};
-        parameter_fits(i, [conds{c}(1), '_al']) = {cond_fit.est.p_prc.al};
-        parameter_fits(i, [conds{c}(1), '_rho']) = {cond_fit.est.p_prc.rho(2)};
-    end
+i_sub=2;
+sub_data = readtable(fullfile(data_dir, STE_files(i_sub).name));
+sub_fit = model_fits(i_sub).est;
+
+p_sad = [0, 20, 40, 60, 80, 100];
+p_sad_resp = arrayfun(@(x) mean(sub_data.Response_idx(sub_data.Outcome_p_sad == x), 'omitnan'), p_sad);
+
+% simulate using fit parameters
+N_sim=30;
+sim_resp = zeros(N_sim, 6);
+for i_sim = 1:30
+    sim = tapas_simModel(u,...
+        'tapas_ehgf_binary_pu_tbt',...
+        sub_fit.p_prc.p,...
+        'm1_comb_obs',...
+        sub_fit.p_obs.p);
+
+    % simulated responses
+    sim_resp(i_sim, :) = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), p_sad);
+
 end
 
-writetable(parameter_fits, 'parameter_fits.csv');
+close all;
+figure; hold on;
+plot(p_sad, p_sad_resp, 'linewidth', 3);
+plot(p_sad, sim_resp, '--')
+set(gca, 'Ylim', [0, 1])
+
+
+
+
+
+
+
+
+
+
+
+%% Write fit parameters to csv file
+% IDs = unique(cellfun(@str2double, {model_fits.ID}));
+% conds = {'Safe', 'Threat'};
+% var_names = {'ID', 'group', 'S_om2', 'S_al', 'S_rho', 'T_om2', 'T_al', 'T_rho'};
+% var_types = {'double', 'string', 'double','double','double','double','double','double'};
+% parameter_fits = table(...
+%     'Size', [numel(IDs), numel(var_names)],...
+%     'VariableNames', var_names,...
+%     'VariableTypes', var_types);
+% 
+% for i=1:numel(IDs)
+%     sub_fits = model_fits(strcmp(num2str(IDs(i)), {model_fits.ID}));
+%     parameter_fits(i, 'ID') = {IDs(i)};
+%     parameter_fits(i, 'group') = {sub_fits(1).group};
+%     for c=1:2
+%         cond_fit = sub_fits(strcmp({sub_fits.condition}, conds{c}));
+%         parameter_fits(i, [conds{c}(1), '_om2']) = {cond_fit.est.p_prc.om(2)};
+%         parameter_fits(i, [conds{c}(1), '_al']) = {cond_fit.est.p_prc.al};
+%         parameter_fits(i, [conds{c}(1), '_rho']) = {cond_fit.est.p_prc.rho(2)};
+%     end
+% end
+% 
+% % writetable(parameter_fits, 'parameter_fits.csv');
 
 
 

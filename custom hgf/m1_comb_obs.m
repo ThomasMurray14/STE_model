@@ -58,6 +58,8 @@ function [logp, yhat, res, logp_split] = m1_comb_obs(r, infStates, ptrans)
 [logp_reactionTime, yhat_reactionTime, res_reactionTime] = ...
     m1_logrt_linear_binary(r, infStates, ptrans);
 
+
+
 %% confidence part of the response model
 % confidence01 = r.y(:,4);
 % 
