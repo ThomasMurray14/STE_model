@@ -3,14 +3,14 @@ eta1 = 1;
 eta0 = 0;
 muhat_0_set = [0:0.05:1];
 u_0_set  = [0:0.2:1];
-al_temp = 1;% [-2:0.1:2];
+
 
 
 % play with different values of alpha 
 % when alpha 0.02, no perceptual uncertainty, 
 % when alpha 1, a lot of perceptual uncertainty and the input is simply the expectation
 
-al_temp = 0.02;%
+al_temp = 0.1;%
 figure;
 hold on
 xlabel('u_0_set'); % Label x-axis
@@ -22,8 +22,6 @@ muhat_0 = muhat_0_set(s);
 mu1 = get_mus(eta1, eta0, u_0_set, muhat_0, al_temp);
 plot(u_0_set, mu1)
 waitforbuttonpress
-
-
 end
 hold off
 

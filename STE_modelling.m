@@ -7,26 +7,14 @@
 % split corr/incorr or 
 % tapas_ehgf_binary_combObs_plotTraj
 % bias of happy vs sad (perception or response)
+
 %%
 
-% Script to play around with modelling the TOSSTE data
 close all; clear;
+% addpath([pwd, '\custom_hgf']);
 
-% scriptpath = which(mfilename);
-% rootdir = scriptpath(1:find(scriptpath == '\',1,'last'));
 
-% cd (rootdir)
-
-% addpath(genpath(rootdir));%,'ReinfLearn')); % modelling code
-
-addpath([pwd, '\custom hgf']);
-
-%%add your HGF script folder to path
-% GenScriptsFolder = 'P:\Projects\General Scripts';
-% addpath(genpath(GenScriptsFolder));%,'ReinfLearn')); % modelling code
-
-%%
-% data_dir = '..\DATA\STE_data\';
+%% 
 
 % example data (to get contingencies etc)
 sub_data = readtable('STE_data\10369536_A_Threat.csv');
@@ -47,46 +35,24 @@ sub_data = sub_data(~isnan(sub_data.logRT),:); % remove nans
 
 sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
 
-
 %happy_face - 0.5
-% get trial by trial uncertainty (alpha)
-
-
-% not needed
-% p_uncertainty = zeros(size(p_sad));
-% p_uncertainty(p_sad == 0)   = 0.01; %.2;
-% p_uncertainty(p_sad == 100) = 0.01; %.2;
-% p_uncertainty(p_sad == 20)  =  0.2;%.4;
-% p_uncertainty(p_sad == 80)  =  0.2;%.4;
-% p_uncertainty(p_sad == 40)  =  0.4;%.6;
-% p_uncertainty(p_sad == 60)  =  0.4;%.6;
-
 
 u = [sub_data.u_al, sub_data.Cue_idx];
 y = [sub_data.correct,sub_data.logRT];
-% remove missed responses (doesn't seem to like missing first trial...)
-% u(isnan(response_idx), :) = NaN;
+
 
 %% Get configuration structures
-prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
-% prc_model_config.eta0sa=2;
-% prc_model_config.eta1sa=2;
-% prc_model_config.priorsas(16)=prc_model_config.eta0sa;
-% prc_model_config.priorsas(17)=prc_model_config.eta1sa;
-obs_model_config = m1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
+prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
+obs_model_config = obs1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
-
 optim_config.nRandInit = 5;
-
 
 
 %% simulate responses
 
-
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
-prc_params = tapas_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
-
+prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
 
 prc_params(1); %mu_0mu(1)
 prc_params(2); %mu_0mu(2)
@@ -107,28 +73,35 @@ prc_params(16); %eta0mu;
 prc_params(17); %eta1mu;
 
 
-
 obs_params = obs_model_config.priormus;
 obs_params(1) = exp(obs_params(1));
 obs_params(7) = exp(obs_params(7));
 
 sim = tapas_simModel(u,...%[u;u;u;u],...
-    'tapas_ehgf_binary_pu_tbt',...
+    'prc1_ehgf_binary_pu_tbt',...
     prc_params,...
-    'm1_comb_obs',...
+    'obs1_comb_obs',...
     obs_params,...
     123456789);
 
-tapas_ehgf_binary_tbt_plotTraj(sim);
+prc1_ehgf_binary_tbt_plotTraj(sim);
+
+
+% visualise psychometric
+sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
+figure('name', 'simulated psychometric'); hold on;
+plot(0:20:100, sim_psychometric, 'linewidth', 3);
+set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
+
 
 %% plot
 close all;
-% tapas_ehgf_binary_tbt_plotTraj(sim)
+
 
 
 %% recover parameters
 
-prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
+prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
 
 % prc_model_config.eta0sa=2;
 % prc_model_config.eta1sa=2;
@@ -143,28 +116,21 @@ est = tapas_fitModel(...
     optim_config);
 
 % Check parameter identifiability
-% tapas_fit_plotCorr(est)
-% tapas_hgf_binary_plotTraj(est)
+% prc1_fit_plotCorr(est)
+% prc1_hgf_binary_plotTraj(est)
 
 
 %% fit real data 
 
 close all;
 
-prc_model_config = tapas_ehgf_binary_pu_tbt_config(); % perceptual model
-
-% prc_model_config.eta0sa=2;
-% prc_model_config.eta1sa=2;
-% prc_model_config.priorsas(16)=prc_model_config.eta0sa;
-% prc_model_config.priorsas(17)=prc_model_config.eta1sa;
-
-obs_model_config = m1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
+prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model %%%%% Do I need to keep loading this?
+obs_model_config = obs1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 
 data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
 model_fits = repmat(struct(), numel(STE_files), 1);
-
 
 for i_file=1:5%numel(STE_files)
     fname = STE_files(i_file).name;
@@ -172,7 +138,6 @@ for i_file=1:5%numel(STE_files)
     sub_data = readtable(fullfile(data_dir, fname));
     fname_tokens = regexp(fname, '(\d+)_(\w)_(\w+)\.csv', 'tokens');
     [model_fits(i_file).ID, model_fits(i_file).group, model_fits(i_file).condition] = fname_tokens{:}{:};
-
 
     % prepare data
     sub_data.p_sad = sub_data.Outcome_p_sad/100;
@@ -182,7 +147,6 @@ for i_file=1:5%numel(STE_files)
     sub_data.logRT = log(sub_data.Response_RT);
     sub_data = sub_data(~isnan(sub_data.logRT),:);    % remove nans 
     sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
-    
     
     y = [sub_data.correct, sub_data.logRT];
     u_sub = u(~isnan(sub_data.logRT),:);
@@ -210,7 +174,7 @@ sum(cellfun(@isempty, {model_fits.est})) % N with no fit
 
 %% Visualise psychometric
 
-i_sub=2;
+i_sub=1;
 sub_data = readtable(fullfile(data_dir, STE_files(i_sub).name));
 sub_fit = model_fits(i_sub).est;
 
@@ -221,18 +185,21 @@ p_sad_resp = arrayfun(@(x) mean(sub_data.Response_idx(sub_data.Outcome_p_sad == 
 N_sim=30;
 sim_resp = zeros(N_sim, 6);
 for i_sim = 1:30
+    fit_prc_params = sub_fit.p_prc.p;
+    fit_obs_params = sub_fit.p_obs.p;
+    
     sim = tapas_simModel(u,...
-        'tapas_ehgf_binary_pu_tbt',...
-        sub_fit.p_prc.p,...
-        'm1_comb_obs',...
-        sub_fit.p_obs.p);
+        'prc1_ehgf_binary_pu_tbt',...
+        fit_prc_params,...
+        'obs1_comb_obs',...
+        fit_obs_params);
 
     % simulated responses
     sim_resp(i_sim, :) = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), p_sad);
 
 end
 
-close all;
+
 figure; hold on;
 plot(p_sad, p_sad_resp, 'linewidth', 3);
 plot(p_sad, sim_resp, '--')
@@ -271,6 +238,8 @@ set(gca, 'Ylim', [0, 1])
 % end
 % 
 % % writetable(parameter_fits, 'parameter_fits.csv');
+
+
 
 
 
