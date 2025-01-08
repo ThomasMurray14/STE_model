@@ -1,7 +1,7 @@
-% Perceptual = eHGF (Nace version); Response = binary
+% Perceptual = eHGF (Nace version), Response = logRT
+
 
 close all; clear;
-
 
 % example data (to get contingencies etc)
 sub_data = readtable('STE_data\10369536_A_Threat.csv');
@@ -16,16 +16,12 @@ u_al(tr_temp) = 1 - sub_data.p_sad(tr_temp);
 sub_data.u_al = u_al;
 sub_data.state=state;
 
-
 % Responses
 sub_data.logRT = log(sub_data.Response_RT);
 sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
 
-% sub_data = sub_data(~isnan(sub_data.logRT),:); % remove nans 
-%happy_face - 0.5
-
 u = [sub_data.u_al, sub_data.Cue_idx];
-y = [sub_data.correct];
+y = [sub_data.logRT];
 
 u_sub = u(~isnan(sub_data.Response_idx),:);
 y_sub = y(~isnan(sub_data.Response_idx),:);
@@ -33,11 +29,9 @@ y_sub = y(~isnan(sub_data.Response_idx),:);
 
 
 
-
-
 %% models
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
-obs_model_config = tapas_unitsq_sgm_config();%tapas_logrt_linear_binary_config(); % response model
+obs_model_config = tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 5;
 
@@ -66,20 +60,24 @@ prc_params(16); %eta0mu;
 prc_params(17); %eta1mu;
 
 
+
+obs_model_config.be4sa = 0;
+obs_model_config.priorsas(5) = obs_model_config.be4sa;
+
 obs_params = obs_model_config.priormus;
+
+
 
 sim = tapas_simModel(u_sub,...%[u;u;u;u],...
     'prc1_ehgf_binary_pu_tbt',...
     prc_params,...
-    'tapas_unitsq_sgm',...
-    obs_params, ...
+    'tapas_logrt_linear_binary',...
+    obs_params,...
     123456789);
 
-% visualise psychometric
-sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-% figure('name', 'simulated psychometric'); hold on;
-plot(0:20:100, sim_psychometric, 'linewidth', 3);
-set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
+
+%% plot
+% prc1_ehgf_binary_tbt_plotTraj(sim);
 
 
 %% recover parameters
@@ -99,14 +97,19 @@ tapas_hgf_binary_plotTraj(est)
 
 
 
+
 %% fit real data 
 
 close all;
 
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
-obs_model_config = tapas_unitsq_sgm_config(); % response model
+obs_model_config = tapas_logrt_linear_binary_config(); % response model
+obs_model_config.be4sa = 0; % don't estimate beta 4 (influence of top level)
+obs_model_config.priorsas(5) = obs_model_config.be4sa;
+
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 5;
+
 
 data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
@@ -126,16 +129,17 @@ for i_file=1:numel(STE_files)
     sub_data.u_al = u_al; % these are the same across everyone
     sub_data.state = state;
     sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
+    sub_data.logRT = log(sub_data.Response_RT);
     
     u_sub = u(~isnan(sub_data.Response_idx),:);
-    y_sub = sub_data.correct(~isnan(sub_data.Response_idx));
+    y_sub = sub_data.logRT(~isnan(sub_data.Response_idx));
     
     model_fits(i_file).y = y_sub;
     
     % fit data
     try
         est = tapas_fitModel(...
-            y_sub,... %,confidence],...
+            y_sub,... 
             u_sub,...
             prc_model_config,...
             obs_model_config,...
@@ -148,8 +152,7 @@ for i_file=1:numel(STE_files)
     end
 end
 
-save('STE_model2_LME.mat', 'LMEs');
-
+save('STE_model3_LME.mat', 'LMEs');
 
 
 

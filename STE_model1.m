@@ -17,7 +17,7 @@ close all; clear;
 %% 
 
 % example data (to get contingencies etc)
-sub_data = readtable('STE_data\10369536_A_Threat.csv');
+sub_data = readtable('STE_data\10369536_A_Safe.csv');
 
 % Contingency space
 sub_data.p_sad = sub_data.Outcome_p_sad/100;
@@ -29,21 +29,24 @@ u_al(tr_temp) = 1 - sub_data.p_sad(tr_temp);
 sub_data.u_al = u_al;
 sub_data.state=state;
 
-% response_idx    = sub_data.Response_idx;
-sub_data.logRT              = log(sub_data.Response_RT);
-sub_data = sub_data(~isnan(sub_data.logRT),:); % remove nans 
 
+% Responses
+sub_data.logRT = log(sub_data.Response_RT);
 sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
 
+% sub_data = sub_data(~isnan(sub_data.logRT),:); % remove nans 
 %happy_face - 0.5
 
 u = [sub_data.u_al, sub_data.Cue_idx];
 y = [sub_data.correct,sub_data.logRT];
 
+u_sub = u(~isnan(sub_data.Response_idx),:);
+y_sub = y(~isnan(sub_data.Response_idx),:);
+
 
 %% Get configuration structures
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
-obs_model_config = obs1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
+obs_model_config = obs1_comb_obs_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 5;
 
@@ -74,34 +77,32 @@ prc_params(17); %eta1mu;
 
 
 obs_params = obs_model_config.priormus;
-obs_params(1) = exp(obs_params(1));
+obs_params(1) = exp(obs_params(1)); %%%%%%%%%%%% Why do I do this bit?
 obs_params(7) = exp(obs_params(7));
 
-sim = tapas_simModel(u,...%[u;u;u;u],...
+sim = tapas_simModel(u_sub,...
     'prc1_ehgf_binary_pu_tbt',...
     prc_params,...
     'obs1_comb_obs',...
     obs_params,...
     123456789);
 
-% prc1_ehgf_binary_tbt_plotTraj(sim);
-
-% visualise psychometric
-sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-% figure('name', 'simulated psychometric'); hold on;
-plot(0:20:100, sim_psychometric, 'linewidth', 3);
-set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
 
 
 %% plot
-close all;
+% prc1_ehgf_binary_tbt_plotTraj(sim);
+
+% Visualise Psychometric
+% sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
+% figure('name', 'simulated psychometric'); hold on;
+% plot(0:20:100, sim_psychometric, 'linewidth', 3);
+% set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
 
 
 
 %% recover parameters
 
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
-
 
 est = tapas_fitModel(...
     sim.y,...
@@ -111,8 +112,8 @@ est = tapas_fitModel(...
     optim_config);
 
 % Check parameter identifiability
-% prc1_fit_plotCorr(est)
-% prc1_hgf_binary_plotTraj(est)
+tapas_fit_plotCorr(est)
+prc1_ehgf_binary_tbt_plotTraj(est)
 
 
 %% fit real data 
@@ -122,12 +123,15 @@ close all;
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model %%%%% Do I need to keep loading this?
 obs_model_config = obs1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
+optim_config.nRandInit = 5;
 
 data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
 model_fits = repmat(struct(), numel(STE_files), 1);
 
-for i_file=1:5%numel(STE_files)
+LMEs = nan(numel(STE_files), 1);
+
+for i_file=1:numel(STE_files)
     fname = STE_files(i_file).name;
     fprintf('\n%s\n', fname);
     sub_data = readtable(fullfile(data_dir, fname));
@@ -143,24 +147,29 @@ for i_file=1:5%numel(STE_files)
     sub_data = sub_data(~isnan(sub_data.logRT),:);    % remove nans 
     sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
     
-    y = [sub_data.correct, sub_data.logRT];
+    y_sub = [sub_data.correct, sub_data.logRT];
     u_sub = u(~isnan(sub_data.logRT),:);
-    model_fits(i_file).y = y;
+    model_fits(i_file).y = y_sub;
     
     % fit data
     try
         est = tapas_fitModel(...
-            y,... %,confidence],...
+            y_sub,... %,confidence],...
             u_sub,...
             prc_model_config,...
             obs_model_config,...
             optim_config);
         
         model_fits(i_file).est = est;
+        LMEs(i_file) = est.optim.LME;
     catch
         model_fits(i_file).est = [];
     end
 end
+
+save('STE_model1_LME.mat', 'LMEs');
+
+
 
 
 %%

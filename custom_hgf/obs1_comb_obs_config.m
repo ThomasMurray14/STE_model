@@ -43,7 +43,7 @@ c.predorpost = 1; % Predictions
 %c.predorpost = 2; % Posteriors
 
 % Model name
-c.model = 'm1_comb_obs';
+c.model = 'obs1_comb_obs';
 
 
 %% Sufficient statistics of Gaussian parameter priors
