@@ -1,9 +1,9 @@
-function prc2_ehgf_binary_tbt_plotTraj(r)
+function prc2_hgf_binary_plotTraj(r)
 % Plots the estimated or generated trajectories for the binary HGF perceptual model
 % Usage example:  est = tapas_fitModel(responses, inputs); tapas_hgf_binary_plotTraj(est);
 %
 % --------------------------------------------------------------------------------------------------
-% Copyright (C) 2012-2020 Christoph Mathys, TNU, UZH & ETHZ
+% Copyright (C) 2012-2013 Christoph Mathys, TNU, UZH & ETHZ
 %
 % This file is part of the HGF toolbox, which is released under the terms of the GNU General Public
 % Licence (GPL), version 3. You can redistribute it and/or modify it under the terms of the GPL
@@ -24,7 +24,7 @@ figure(...
     'Name', 'HGF trajectories');
 
 % Time axis
-if size(r.u,2) > 2
+if size(r.u,2) > 1
     t = r.u(:,end)';
 else
     t = ones(1,size(r.u,1));

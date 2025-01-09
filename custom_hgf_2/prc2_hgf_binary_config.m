@@ -1,8 +1,8 @@
-function c = prc2_ehgf_binary_pu_tbt_config
+function c = prc2_hgf_binary_config
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Contains the configuration for the Hierarchical Gaussian Filter (HGF)
-% for binary inputs in the *presence* of perceptual uncertainty.
+% for binary inputs in the absence of perceptual uncertainty.
 %
 % The HGF is the model introduced in 
 %
@@ -20,9 +20,6 @@ function c = prc2_ehgf_binary_pu_tbt_config
 %
 % This file refers to BINARY inputs (Eqs 1-3 in Mathys et al., (2011));
 % for continuous inputs, refer to tapas_hgf_config.
-%
-% This file refers to UNCERTAIN inputs (Eqs 45-47 in Mathys et al., (2011));
-% for inputs without uncertainty, refer to tapas_hgf_binary_config.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -52,9 +49,6 @@ function c = prc2_ehgf_binary_pu_tbt_config
 %         est.p_prc.rho        row vector of rhos (representing drift; in ascending order of levels)
 %         est.p_prc.ka         row vector of kappas (in ascending order of levels)
 %         est.p_prc.om         row vector of omegas (in ascending order of levels)
-%         est.p_prc.al         scalar alpha (perceptual uncertainty)
-%         est.p_prc.eta0       scalar eta0 (mean of first input category)
-%         est.p_prc.eta1       scalar eta1 (mean of second input category)
 %
 % Note that the first entry in all of the row vectors will be NaN because, at the first level,
 % these parameters are either determined by the second level (mu_0 and sa_0) or undefined (rho,
@@ -80,13 +74,11 @@ function c = prc2_ehgf_binary_pu_tbt_config
 % Tips:
 % - When analyzing a new dataset, take your inputs u and use
 %
-%   >> est = tapas_fitModel([], u, 'tapas_hgf_binary_pu_config', 'tapas_bayes_optimal_binary_config');
+%   >> est = tapas_fitModel([], u, 'tapas_hgf_binary_config', 'tapas_bayes_optimal_binary_config');
 %
 %   to determine the Bayes optimal perceptual parameters (given your current priors as defined in
 %   this file here, so choose them wide and loose to let the inputs influence the result). You can
 %   then use the optimal parameters as your new prior means for the perceptual parameters.
-%
-% - When analyzing a new dataset, take your inputs u and use
 %
 % - If you get an error saying that the prior means are in a region where model assumptions are
 %   violated, lower the prior means of the omegas, starting with the highest level and proceeding
@@ -115,7 +107,7 @@ function c = prc2_ehgf_binary_pu_tbt_config
 c = struct;
 
 % Model name
-c.model = 'ehgf_binary_pu_tbt';
+c.model = 'hgf_binary';
 
 % Number of levels (minimum: 3)
 c.n_levels = 3;
@@ -146,7 +138,7 @@ c.logsa_0sa = [NaN,          0,      0];
 % Undefined (therefore NaN) at the first level.
 % Fix this to zero to turn off drift.
 c.rhomu = [NaN, 0, 0];
-c.rhosa = [NaN, 1, 0];
+c.rhosa = [NaN, 0, 0];
 
 % Kappas
 % Format: row vector of length n_levels-1.
@@ -154,29 +146,14 @@ c.rhosa = [NaN, 1, 0];
 % Higher log(kappas) should be fixed (preferably to log(1)) if the
 % observation model does not use mu_i+1 (kappa then determines the
 % scaling of x_i+1).
-c.logkamu = [log(1),-Inf ];%log(1)];
+c.logkamu = [log(1), log(1)];
 c.logkasa = [     0,      0];
 
 % Omegas
 % Format: row vector of length n_levels.
 % Undefined (therefore NaN) at the first level.
-c.ommu = [NaN,  -1,  -100];
-c.omsa = [NaN, 1, 0];
-
-% Alpha
-% Format: scalar.
-c.logalmu = log(0.02);
-c.logalsa = 1;
-
-% Eta0
-% Format: scalar.
-c.eta0mu = 0;
-c.eta0sa = 0;
-
-% Eta1
-% Format: scalar.
-c.eta1mu = 1;
-c.eta1sa = 0;
+c.ommu = [NaN,  -3,  -6];
+c.omsa = [NaN, 4^2, 4^2];
 
 % Gather prior settings in vectors
 c.priormus = [
@@ -185,9 +162,6 @@ c.priormus = [
     c.rhomu,...
     c.logkamu,...
     c.ommu,...
-    c.logalmu,...
-    c.eta0mu,...
-    c.eta1mu,...
          ];
 
 c.priorsas = [
@@ -196,22 +170,19 @@ c.priorsas = [
     c.rhosa,...
     c.logkasa,...
     c.omsa,...
-    c.logalsa,...
-    c.eta0sa,...
-    c.eta1sa,...
          ];
 
 % Check whether we have the right number of priors
-expectedLength = 3*c.n_levels+2*(c.n_levels-1)+4;
+expectedLength = 3*c.n_levels+2*(c.n_levels-1)+1;
 if length([c.priormus, c.priorsas]) ~= 2*expectedLength;
     error('tapas:hgf:PriorDefNotMatchingLevels', 'Prior definition does not match number of levels.')
 end
 
 % Model function handle
-c.prc_fun = @prc2_ehgf_binary_pu_tbt;
+c.prc_fun = @prc2_hgf_binary;
 
 % Handle to function that transforms perceptual parameters to their native space
 % from the space they are estimated in
-c.transp_prc_fun = @prc2_ehgf_binary_pu_tbt_transp;
+c.transp_prc_fun = @prc2_hgf_binary_transp;
 
 return;
