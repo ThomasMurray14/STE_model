@@ -13,11 +13,28 @@ logp = NaN(n,1);
 yhat = NaN(n,1);
 res  = NaN(n,1);
 
-% % Weed irregular trials out from responses and inputs
-% y = r.y(:,1);
-% y(r.irr) = [];
-% u = r.u(:,1);
-% u(r.irr) = [];
+% Get x2
+% Assumed structure of infStates:
+% dim 1: time (ie, input sequence number)
+% dim 2: HGF level
+% dim 3: 1: muhat, 2: sahat, 3: mu, 4: sa
+% I'm using mu (not muhat), following logrt model.
+x2 = infStates(:,2,3); % use second level
+
+% Predict response using psychometric function
+gamma = 0;
+lambda = 0;
+beta = 3; %%%% Check if this is sensible
+for i = 1:numel(x2)
+    alpha = b0 + (b1*x2(i)); % regression for PSE
+    morph = # % %sad
+
+    % probability of response = 1 (using Weibull function)
+    p_1 = gamma + (1 - gamma - lambda) * (1 - exp(-(morph/alpha).^beta));
+    
+    % predicted response
+    resp = rand < p_1;
+end
 
 
 
