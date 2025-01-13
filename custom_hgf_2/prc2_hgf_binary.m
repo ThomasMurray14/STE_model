@@ -52,23 +52,24 @@ u = [0; r.u(:,1)];
 n = length(u);
 
 % Assume that if u has more than one column, the last contains t
-try
-    if r.c_prc.irregular_intervals
-        if size(u,2) > 1
-            t = [0; r.u(:,end)];
-        else
-            error('tapas:hgf:InputSingleColumn', 'Input matrix must contain more than one column if irregular_intervals is set to true.');
-        end
-    else
-        t = ones(n,1);
-    end
-catch
-    if size(u,2) > 1
-        t = [0; r.u(:,end)];
-    else
-        t = ones(n,1);
-    end
-end
+t = ones(n,1);
+% try
+%     if r.c_prc.irregular_intervals
+%         if size(u,2) > 1
+%             t = [0; r.u(:,end)];
+%         else
+%             error('tapas:hgf:InputSingleColumn', 'Input matrix must contain more than one column if irregular_intervals is set to true.');
+%         end
+%     else
+%         t = ones(n,1);
+%     end
+% catch
+%     if size(u,2) > 1
+%         t = [0; r.u(:,end)];
+%     else
+%         t = ones(n,1);
+%     end
+% end
 
 % Initialize updated quantities
 
@@ -176,7 +177,7 @@ for k = 2:1:n
         
         % Updates
         pi(k,l) = pihat(k,l) +1/2 *ka(l-1)^2 *w(k,l-1) *(w(k,l-1) +(2 *w(k,l-1) -1) *da(k,l-1));
- 
+        
         if pi(k,l) <= 0
             error('tapas:hgf:NegPostPrec', 'Negative posterior precision. Parameters are in a region where model assumptions are violated.');
         end

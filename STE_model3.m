@@ -60,7 +60,6 @@ prc_params(16); %eta0mu;
 prc_params(17); %eta1mu;
 
 
-
 obs_model_config.be4sa = 0;
 obs_model_config.priorsas(5) = obs_model_config.be4sa;
 
