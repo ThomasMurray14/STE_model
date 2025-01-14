@@ -7,7 +7,8 @@ function c = obs2_psychometric_config
 c = struct;
 
 % Is the decision based on predictions or posteriors? Comment as appropriate.
-c.predorpost = 1; % Predictions (I think)?
+% c.predorpost = 1; % Predictions (I think)?
+c.predorpost = 2; % Posteriors
 
 % Model name
 c.model = 'obs2_psychometric_config';

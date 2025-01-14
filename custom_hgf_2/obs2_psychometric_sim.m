@@ -11,8 +11,8 @@ n = size(infStates,1);
 % Stimulus intensity
 intensity = r.u(:,2);
 
-% Get x2
-x2 = infStates(:,2,3); % use second level
+% Get x3
+x3 = infStates(:,3,3); % use second level
 
 % Predict response using psychometric function
 gamma = 0;
@@ -20,8 +20,8 @@ lambda = 0;
 beta = 3; % Shape parameter (fixed for now)
 
 prob = nan(n, 1);
-for i = 1:numel(x2)
-    alpha = b0 + (b1*x2(i)); % regression for PSE
+for i = 1:numel(x3)
+    alpha = b0 + (b1*x3(i)); % regression for PSE
 
     stim_intensity = intensity(i); % get %sad
 

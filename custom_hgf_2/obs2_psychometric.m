@@ -23,7 +23,7 @@ yhat = NaN(n,1);
 % dim 2: HGF level
 % dim 3: 1: muhat, 2: sahat, 3: mu, 4: sa
 % I'm using mu (not muhat), following logrt model.
-x2 = infStates(:,2,3); % use second level
+x3 = infStates(:,3,3); % use third level
 
 % Get stimulus intensity
 intensity = r.u(:,2);
@@ -33,8 +33,8 @@ gamma = 0;
 lambda = 0;
 beta = 3; % Shape parameter (fixed for now)
 
-for i = 1:numel(x2)
-    alpha = b0 + (b1*x2(i)); % regression for PSE
+for i = 1:numel(x3)
+    alpha = b0 + (b1*x3(i)); % regression for PSE
 
     stim_intensity = intensity(i); % get %sad
 

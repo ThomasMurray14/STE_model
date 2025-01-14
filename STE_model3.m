@@ -1,6 +1,5 @@
 % Perceptual = eHGF (Nace version), Response = logRT
 
-
 close all; clear;
 
 % example data (to get contingencies etc)
