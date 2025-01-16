@@ -16,11 +16,11 @@ c.model = 'obs2_psychometric_config';
 % Sufficient statistics of Gaussian parameter priors
 % B0
 c.b0mu = .5;
-c.b0sa = .2;
+c.b0sa = 1;
 
 % B1
 c.b1mu = 0;
-c.b1sa = .2;
+c.b1sa = 1;
 
 % Gather prior settings in vectors
 c.priormus = [

@@ -31,8 +31,6 @@ optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 10;
 
 
-prc_model_config.ommu(3)=0;
-prc_model_config.priormus(14)=prc_model_config.ommu(3);
 
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
@@ -59,18 +57,10 @@ prc_model_config = prc2_ehgf_binary_config(); % perceptual model
 obs_model_config = obs2_psychometric_config(); % response model
 % obs_model_config = tapas_unitsq_sgm_config(); % response model
 
-optim_config.nRandInit = 5;
-
-% adjust prior variance %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-prc_model_config.omsa(2)=8;
-prc_model_config.priorsas(13)=prc_model_config.omsa(2);
-prc_model_config.ommu(3)=0;
-prc_model_config.priormus(14)=prc_model_config.ommu(3);
-prc_model_config.omsa(3)=0;
-prc_model_config.priorsas(14)=prc_model_config.omsa(3);
+optim_config.nRandInit = 10;
 
 
-% do estimate regression coefficients
+% estimate regression coefficients
 obs_model_config.b0sa=2;
 obs_model_config.b1sa=2;
 obs_model_config.priorsas(1)=obs_model_config.b0sa;
@@ -91,9 +81,9 @@ tapas_hgf_binary_plotTraj(est)
 %% full parameter recovery
 
 om2_range = [-4 -1];
-om3_range = [-8 -3];
+om3_range = [-4 -1];
 b0_range = [.1 .9];
-b1_range = [-.5, .5];
+b1_range = [-1, 1];
 
 N=100;
 
@@ -156,6 +146,8 @@ figure('name', 'b1'); scatter(b1_sim, b1_est);
 
 close all;
 
+prc_model_config.omsa(2)=16;
+prc_model_config.priorsas(13)=prc_model_config.omsa(2);
 prc_model_config.omsa(3)=16;
 prc_model_config.priorsas(14)=prc_model_config.omsa(3);
 
@@ -218,29 +210,36 @@ save('STE_model4_LME.mat', 'LMEs');
 
 
 %%
-om2_=nan(numel(model_fits), 1);
-om3_=nan(numel(model_fits), 1);
-b0_=nan(numel(model_fits), 1);
-b1_=nan(numel(model_fits), 1);
 
+IDs = unique(arrayfun(@(x) str2double(model_fits(x).ID), 1:numel(model_fits)));
+om2_=nan(numel(IDs), 2);
+om3_=nan(numel(IDs), 2);
+b0_=nan(numel(IDs), 2);
+b1_=nan(numel(IDs), 2);
+
+conds={'Safe', 'Threat'};
 for i=1:numel(model_fits)
     if ~isempty(model_fits(i).est)
-        om2_(i)=model_fits(i).est.p_prc.om(2);
-        om3_(i)=model_fits(i).est.p_prc.om(3);
-        b0_(i)=model_fits(i).est.p_obs.b0;
-        b1_(i)=model_fits(i).est.p_obs.b1;
+        
+        iID = find(IDs == str2double(model_fits(i).ID));
+        iCond = strcmp(conds, model_fits(i).condition);
+        
+        om2_(iID, iCond)=model_fits(i).est.p_prc.om(2);
+        om3_(iID, iCond)=model_fits(i).est.p_prc.om(3);
+        b0_(iID, iCond)=model_fits(i).est.p_obs.b0;
+        b1_(iID, iCond)=model_fits(i).est.p_obs.b1;
     end
 end
 
-safe = arrayfun(@(x) strcmp(model_fits(x).condition, 'Safe'), 1:numel(model_fits));
-threat = ~safe;
 
-om2_safe = om2_(safe);
-om3_safe = om3_(safe);
-b0_safe = b0_(safe);
-b1_safe = b1_(safe);
+%%
+[h,p,ci,stats] = ttest(om2_(:,1), om2_(:,2))
+%%
+[h,p,ci,stats] = ttest(om3_(:,1), om3_(:,2))
+%%
+[h,p,ci,stats] = ttest(b0_(:,1), b0_(:,2))
+%%
+[h,p,ci,stats] = ttest(b1_(:,1), b1_(:,2))
 
-om2_threat = om2_(threat);
-om3_threat = om3_(threat);
-b0_threat = b0_(threat);
-b1_threat = b1_(threat);
+
+
