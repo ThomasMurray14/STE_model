@@ -34,18 +34,15 @@ optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 prc_model_config.logkamu(2) = 0;
 prc_model_config.priormus(11) = prc_model_config.logkamu(2);
 
-prc_model_config.ommu(3)=-4;
+prc_model_config.ommu(3)=-3;
 prc_model_config.priormus(14) = prc_model_config.ommu(3);
-
 
 
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = tapas_ehgf_binary_transp(r_temp, prc_model_config.priormus);
 
-
 obs_params = obs_model_config.priormus;
-
 
 sim = tapas_simModel(u_sub,...
     'tapas_ehgf_binary',...
@@ -59,21 +56,21 @@ sim = tapas_simModel(u_sub,...
 prc_model_config = tapas_ehgf_binary_config(); % perceptual model
 obs_model_config = tapas_unitsq_sgm_config(); % response model
 
-optim_config.nRandInit = 30;
+optim_config.nRandInit = 10;
 
 
-prc_model_config.omsa(2) = 16;
+prc_model_config.omsa(2) = 8;
 prc_model_config.priorsas(13)=prc_model_config.omsa(2);
 
-prc_model_config.omsa(3) = 16;
+prc_model_config.ommu(3) = 0;
+prc_model_config.priormus(14)=prc_model_config.ommu(3);
+prc_model_config.omsa(3) = 0;
 prc_model_config.priorsas(14)=prc_model_config.omsa(3);
 
-prc_model_config.logkasa(1) = 4;
+prc_model_config.logkasa(1) = 0;
 prc_model_config.priorsas(10) = prc_model_config.logkasa(1);
-
-prc_model_config.logkasa(2) = 4;
+prc_model_config.logkasa(2) = 0;
 prc_model_config.priorsas(11) = prc_model_config.logkasa(2);
-
 
 
 est = tapas_fitModel(...
@@ -83,9 +80,9 @@ est = tapas_fitModel(...
     obs_model_config,...
     optim_config);
 
-tapas_fit_plotCorr(est)
+% tapas_fit_plotCorr(est)
 tapas_hgf_binary_plotTraj(est)
 
 
-
+figure; plot(1:192, exp(est.traj.mu(:,3)))
 
