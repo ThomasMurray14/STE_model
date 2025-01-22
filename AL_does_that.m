@@ -10,7 +10,7 @@ u_0_set  = [0:0.2:1];
 % when alpha 0.02, no perceptual uncertainty, 
 % when alpha 1, a lot of perceptual uncertainty and the input is simply the expectation
 
-al_temp = 0.1;%
+al_temp = .5;%
 figure;
 hold on
 xlabel('u_0_set'); % Label x-axis

@@ -81,11 +81,11 @@ tapas_hgf_binary_plotTraj(est)
 %% full parameter recovery
 
 om2_range = [-4 -1];
-om3_range = [-4 -1];
+om3_range = [-3 1];
 b0_range = [.1 .9];
-b1_range = [-1, 1];
+b1_range = [-3, 3];
 
-N=100;
+N=500;
 
 om2_sim=nan(N,1);
 om2_est=nan(N,1);
@@ -115,30 +115,35 @@ for i=1:N
         'obs2_psychometric',...
         obs_params);
 
-    % fit to simulated
-    est = tapas_fitModel(...
-        sim.y,...
-        sim.u,...
-        prc_model_config,...
-        obs_model_config,...
-        optim_config);
-
-    % get estimated parameters
-    om2_sim(i) = om2;
-    om3_sim(i) = om3;
-    b0_sim(i) = b0;
-    b1_sim(i) = b1;
-    om2_est(i) = est.p_prc.om(2);
-    om3_est(i) = est.p_prc.om(3);
-    b0_est(i) = est.p_obs.b0;
-    b1_est(i) = est.p_obs.b1;
-
+    if ~any(isnan(sim.y))
+    
+        % fit to simulated
+        est = tapas_fitModel(...
+            sim.y,...
+            sim.u,...
+            prc_model_config,...
+            obs_model_config,...
+            optim_config);
+    
+        % get estimated parameters
+        om2_sim(i) = om2;
+        om3_sim(i) = om3;
+        b0_sim(i) = b0;
+        b1_sim(i) = b1;
+        om2_est(i) = est.p_prc.om(2);
+        om3_est(i) = est.p_prc.om(3);
+        b0_est(i) = est.p_obs.b0;
+        b1_est(i) = est.p_obs.b1;
+    end
 end
 
 figure('name', 'om2'); scatter(om2_sim, om2_est);
 figure('name', 'om3'); scatter(om3_sim, om3_est);
 figure('name', 'b0'); scatter(b0_sim, b0_est);
 figure('name', 'b1'); scatter(b1_sim, b1_est);
+
+
+save('STE_model4_recovery.mat', 'om2_sim', 'om2_est', 'om3_sim', 'om3_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est');
 
 
 

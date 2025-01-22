@@ -50,10 +50,8 @@ eta1 = p(5*l+2);
 
 % Add dummy "zeroth" trial
 u = [0; r.u(:,1)];
-cue = [0; r.u(:,2)];
+cue = [-1; r.u(:,2)];
 
-% balanced contrast coding for the "happy bias"
-cue(cue==0) = -1;
 % Number of trials (including prior)
 n = length(u);
 

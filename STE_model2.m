@@ -16,6 +16,8 @@ u_al(tr_temp) = 1 - sub_data.p_sad(tr_temp);
 sub_data.u_al = u_al;
 sub_data.state=state;
 
+cue = sub_data.Cue_idx;
+cue(cue==0) = -1; % balanced contrast coding for the "happy bias"
 
 % Responses
 sub_data.logRT = log(sub_data.Response_RT);
@@ -24,13 +26,11 @@ sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
 % sub_data = sub_data(~isnan(sub_data.logRT),:); % remove nans 
 %happy_face - 0.5
 
-u = [sub_data.u_al, sub_data.Cue_idx];
+u = [sub_data.u_al, cue];
 y = [sub_data.correct];
 
 u_sub = u(~isnan(sub_data.Response_idx),:);
 y_sub = y(~isnan(sub_data.Response_idx),:);
-
-
 
 
 
@@ -43,27 +43,12 @@ optim_config.nRandInit = 5;
 
 
 %% simulate responses
+
+
+
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
-
-prc_params(1); %mu_0mu(1)
-prc_params(2); %mu_0mu(2)
-prc_params(3); %mu_0mu(3)
-prc_params(4); %logsa_0mu(1);
-prc_params(5); %logsa_0mu(2);
-prc_params(6); %logsa_0mu(3);
-prc_params(7); %rho(1);
-prc_params(8) = 100; %rho(2);
-prc_params(9); %rho(3);
-prc_params(10)=.001; %logkamu(1);
-prc_params(11); %logkamu(2);
-prc_params(12); %ommu(1);
-prc_params(13)=-1; %ommu(2);
-prc_params(14)=-1; %ommu(3);
-prc_params(15) = 0.002; %logalmu;
-prc_params(16); %eta0mu;
-prc_params(17); %eta1mu;
 
 
 obs_params = obs_model_config.priormus;
@@ -96,6 +81,7 @@ est = tapas_fitModel(...
 % Check parameter identifiability
 tapas_fit_plotCorr(est)
 tapas_hgf_binary_plotTraj(est)
+
 
 
 

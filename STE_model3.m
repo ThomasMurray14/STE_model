@@ -15,11 +15,14 @@ u_al(tr_temp) = 1 - sub_data.p_sad(tr_temp);
 sub_data.u_al = u_al;
 sub_data.state=state;
 
+cue = sub_data.Cue_idx;
+cue(cue==0) = -1; % balanced contrast coding for the "happy bias"
+
 % Responses
 sub_data.logRT = log(sub_data.Response_RT);
 sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
 
-u = [sub_data.u_al, sub_data.Cue_idx];
+u = [sub_data.u_al, cue];
 y = [sub_data.logRT];
 
 u_sub = u(~isnan(sub_data.Response_idx),:);
@@ -40,30 +43,10 @@ r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
 
-prc_params(1); %mu_0mu(1)
-prc_params(2); %mu_0mu(2)
-prc_params(3); %mu_0mu(3)
-prc_params(4); %logsa_0mu(1);
-prc_params(5); %logsa_0mu(2);
-prc_params(6); %logsa_0mu(3);
-prc_params(7); %rho(1);
-prc_params(8) = 100; %rho(2);
-prc_params(9); %rho(3);
-prc_params(10)=.001; %logkamu(1);
-prc_params(11); %logkamu(2);
-prc_params(12); %ommu(1);
-prc_params(13)=-1; %ommu(2);
-prc_params(14)=-1; %ommu(3);
-prc_params(15) = 0.002; %logalmu;
-prc_params(16); %eta0mu;
-prc_params(17); %eta1mu;
 
-
-obs_model_config.be4sa = 0;
-obs_model_config.priorsas(5) = obs_model_config.be4sa;
-
+obs_model_config.be4mu = 0;
+obs_model_config.priormus(5) = obs_model_config.be4mu;
 obs_params = obs_model_config.priormus;
-
 
 
 sim = tapas_simModel(u_sub,...%[u;u;u;u],...
@@ -81,6 +64,9 @@ sim = tapas_simModel(u_sub,...%[u;u;u;u],...
 %% recover parameters
 
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
+
+obs_model_config.be4sa = 0;
+obs_model_config.priorsas(5) = obs_model_config.be4sa;
 
 est = tapas_fitModel(...
     sim.y,...

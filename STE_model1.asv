@@ -56,14 +56,14 @@ optim_config.nRandInit = 5;
 
 figure('name', 'simulated psychometric'); hold on;
 
-rhos = [-.5 0 .5];
+
+rhos = [-1 1];
 cols=colororder;
 
 for ir = 1:numel(rhos)
     rho = rhos(ir);
-    prc_model_config.logalmu = log(.3);
+    prc_model_config.logalmu = log(.5);
     prc_model_config.rhomu(2) = rho;
-    prc_model_config.ommu(2)=-3;
     prc_model_config = tapas_align_priors(prc_model_config);
     
     r_temp = [];
@@ -79,14 +79,13 @@ for ir = 1:numel(rhos)
         'prc1_ehgf_binary_pu_tbt',...
         prc_params,...
         'obs1_comb_obs',...
-        obs_params,...
-        123456789);
+        obs_params);
     
     
     % Visualise Psychometric
     sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
     sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-    plot(0:20:100, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\rho = %1.1f', rho));
+    plot(0:20:100, sim_psychometric, 'linewidth', 1, 'color', cols(ir,:), 'DisplayName', sprintf('\\rho = %1.1f', rho));
     set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
 
 end
