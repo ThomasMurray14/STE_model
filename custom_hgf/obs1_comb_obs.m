@@ -59,7 +59,6 @@ function [logp, yhat, res, logp_split] = obs1_comb_obs(r, infStates, ptrans)
     obs1_logrt_linear_binary(r, infStates, ptrans);
 
 
-
 %% confidence part of the response model
 % confidence01 = r.y(:,4);
 % 

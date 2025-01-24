@@ -54,47 +54,38 @@ optim_config.nRandInit = 5;
 
 %% simulate responses
 
+
+prc_model_config.logalmu = log(.3);
+prc_model_config.rhomu(2) = 0;
+prc_model_config.ommu(2)=-3;
+prc_model_config = tapas_align_priors(prc_model_config);
+
+r_temp = [];
+r_temp.c_prc.n_levels = 3;
+prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
+
+obs_params = obs_model_config.priormus;
+obs_params(1) = exp(obs_params(1)); %%%%%%%%%%%% Why do I do this bit?
+obs_params(7) = exp(obs_params(7));
+
+sim = tapas_simModel(u_sub,...
+    'prc1_ehgf_binary_pu_tbt',...
+    prc_params,...
+    'obs1_comb_obs',...
+    obs_params,...
+    123456789);
+
+
+% Visualise Psychometric
+% y is "correct"
+% sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+sim_sad = (sub_data.p_sad>.5 & sim.y(:,1)==1) + (sub_data.p_sad<.5 & sim.y(:,1)==0);
+
 figure('name', 'simulated psychometric'); hold on;
+sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
+plot(0:20:100, sim_psychometric, 'linewidth', 3);
+set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
 
-rhos = [0];
-cols=colororder;
-
-for ir = 1:numel(rhos)
-    rho = rhos(ir);
-    prc_model_config.logalmu = log(.3);
-    prc_model_config.rhomu(2) = rho;
-    prc_model_config.ommu(2)=-3;
-    prc_model_config = tapas_align_priors(prc_model_config);
-    
-    r_temp = [];
-    r_temp.c_prc.n_levels = 3;
-    prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
-    
-    
-    obs_params = obs_model_config.priormus;
-    obs_params(1) = exp(obs_params(1)); %%%%%%%%%%%% Why do I do this bit?
-    obs_params(7) = exp(obs_params(7));
-    
-    sim = tapas_simModel(u_sub,...
-        'prc1_ehgf_binary_pu_tbt',...
-        prc_params,...
-        'obs1_comb_obs',...
-        obs_params,...
-        123456789);
-    
-    
-    % Visualise Psychometric
-    % y is "correct"
-    % sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
-    sim_sad = (sub_data.p_sad>.5 & sim.y(:,1)==1) + (sub_data.p_sad<.5 & sim.y(:,1)==0);
-    
-
-    sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-    plot(0:20:100, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\rho = %1.1f', rho));
-    set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
-
-end
-legend;
 
 
 %% Plot trajectory
@@ -107,8 +98,13 @@ prc1_ehgf_binary_tbt_plotTraj(sim);
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
 
 
-obs_model_config.be4sa = 0; %% Check
-obs_model_config.priorsas(6) = obs_model_config.be4sa; %% Check
+obs_model_config.beta0sa=2;
+obs_model_config.beta1sa=2;
+obs_model_config.beta2sa=2;
+obs_model_config.beta3sa=2;
+obs_model_config.beta4sa=0;
+obs_model_config.logsamu=log(2);
+obs_model_config = tapas_align_priors(obs_model_config);
 
 
 est = tapas_fitModel(...

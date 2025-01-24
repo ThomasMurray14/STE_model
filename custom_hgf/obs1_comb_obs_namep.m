@@ -37,11 +37,11 @@ function [pstruct] = obs1_comb_obs_namep(pvec)
 pstruct = struct;
 
 pstruct.ze = pvec(1);
-pstruct.b0 = pvec(2);
-pstruct.b1 = pvec(3);
-pstruct.b2 = pvec(4);
-pstruct.b3 = pvec(5);
-pstruct.b4 = pvec(6);
+pstruct.beta0 = pvec(2);
+pstruct.beta1 = pvec(3);
+pstruct.beta2 = pvec(4);
+pstruct.beta3 = pvec(5);
+pstruct.beta4 = pvec(6);
 pstruct.sa = pvec(length(pvec));
 
 return;

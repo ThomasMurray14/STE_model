@@ -1,4 +1,4 @@
-function pstruct = obs1_unitsq_sgm_namep(pvec)
+function pstruct = obs1_unitsq_sgm_tbt_namep(pvec)
 % --------------------------------------------------------------------------------------------------
 % Copyright (C) 2012-2013 Christoph Mathys, TNU, UZH & ETHZ
 %
