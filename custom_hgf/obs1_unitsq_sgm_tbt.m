@@ -32,6 +32,7 @@ state = u_al>0.5;
 %translating x from state (contingency) space to response space
 x = x_state;
 x(state == 0) = 1-x_state(state ==0);
+
 % Avoid any numerical problems when taking logarithms close to 1
 logx = log(x);
 log1pxm1 = log1p(x-1);

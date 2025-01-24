@@ -10,7 +10,7 @@
 
 %%
 clear;
-% close all;
+close all;
 
 
 %% 
@@ -56,7 +56,7 @@ optim_config.nRandInit = 5;
 
 figure('name', 'simulated psychometric'); hold on;
 
-rhos = [-.5 0 .5];
+rhos = [0];
 cols=colororder;
 
 for ir = 1:numel(rhos)
@@ -84,7 +84,11 @@ for ir = 1:numel(rhos)
     
     
     % Visualise Psychometric
-    sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+    % y is "correct"
+    % sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+    sim_sad = (sub_data.p_sad>.5 & sim.y(:,1)==1) + (sub_data.p_sad<.5 & sim.y(:,1)==0);
+    
+
     sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
     plot(0:20:100, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\rho = %1.1f', rho));
     set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
@@ -100,12 +104,11 @@ prc1_ehgf_binary_tbt_plotTraj(sim);
 %% recover parameters
 
 
-
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
 
 
 obs_model_config.be4sa = 0; %% Check
-obs_model_config.priorsas(5) = obs_model_config.be4sa; %% Check
+obs_model_config.priorsas(6) = obs_model_config.be4sa; %% Check
 
 
 est = tapas_fitModel(...

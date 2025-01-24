@@ -45,7 +45,7 @@ function [logp, yhat, res, logp_split] = obs1_comb_obs(r, infStates, ptrans)
 
 % compute log likelihood (binary responses)
 [logp_binary, yhat_binary, res_binary] = ...
-    obs1_unitsq_sgm(r, infStates, ptrans);
+    obs1_unitsq_sgm_tbt(r, infStates, ptrans);
 
 %% continuous part of the response model
 
