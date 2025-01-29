@@ -1,4 +1,4 @@
-% Perceptual = binary HGF; response = binary (Tom's psychometric VIP)
+% Perceptual = binary HGF; response = binary (Tom's psychometric)
 
 % prc model is normal binary HGF, but edited to ignore column 2 of u
 
@@ -31,7 +31,6 @@ optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 10;
 
 
-
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = prc2_ehgf_binary_transp(r_temp, prc_model_config.priormus);
@@ -53,9 +52,7 @@ set(gca, 'Ylim', [0,1], 'Xtick', 0:.2:1)
 
 
 %% recover parameters
-prc_model_config = prc2_ehgf_binary_config(); % perceptual model
-obs_model_config = obs2_psychometric_config(); % response model
-% obs_model_config = tapas_unitsq_sgm_config(); % response model
+
 
 optim_config.nRandInit = 10;
 
@@ -63,8 +60,7 @@ optim_config.nRandInit = 10;
 % estimate regression coefficients
 obs_model_config.b0sa=2;
 obs_model_config.b1sa=2;
-obs_model_config.priorsas(1)=obs_model_config.b0sa;
-obs_model_config.priorsas(2)=obs_model_config.b1sa;
+obs_model_config = tapas_align_priors(obs_model_config);
 
 est = tapas_fitModel(...
     sim.y,...
@@ -85,7 +81,7 @@ om3_range = [-3 1];
 b0_range = [.1 .9];
 b1_range = [-3, 3];
 
-N=500;
+N=300;
 
 om2_sim=nan(N,1);
 om2_est=nan(N,1);

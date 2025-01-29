@@ -55,9 +55,9 @@ optim_config.nRandInit = 5;
 %% simulate responses
 
 
-prc_model_config.logalmu = log(.3);
+prc_model_config.logalmu = log(0.1);
 prc_model_config.rhomu(2) = 0;
-prc_model_config.ommu(2)=-3;
+prc_model_config.ommu(2)=-2;
 prc_model_config = tapas_align_priors(prc_model_config);
 
 r_temp = [];
@@ -65,7 +65,7 @@ r_temp.c_prc.n_levels = 3;
 prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
 
 obs_params = obs_model_config.priormus;
-obs_params(1) = exp(obs_params(1)); %%%%%%%%%%%% Why do I do this bit?
+obs_params(1) = exp(obs_params(1));
 obs_params(7) = exp(obs_params(7));
 
 sim = tapas_simModel(u_sub,...
@@ -94,16 +94,18 @@ prc1_ehgf_binary_tbt_plotTraj(sim);
 
 %% recover parameters
 
-
 prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
 
+prc_model_config.omsa(2)=3;
+prc_model_config = tapas_align_priors(prc_model_config);
 
+obs_model_config.logzesa=2;
 obs_model_config.beta0sa=2;
 obs_model_config.beta1sa=2;
 obs_model_config.beta2sa=2;
 obs_model_config.beta3sa=2;
 obs_model_config.beta4sa=0;
-obs_model_config.logsamu=log(2);
+obs_model_config.logsasa=2;
 obs_model_config = tapas_align_priors(obs_model_config);
 
 
@@ -123,10 +125,10 @@ prc1_ehgf_binary_tbt_plotTraj(est)
 
 rho2_range = [-2 2];
 om2_range = [-5 -1];
-al_range = [-1 1]; % not sure about ranges...
+al_range = [.005 2]; % not sure about ranges...
 
 
-N=500;
+N=300;
 
 om2_sim=nan(N,1);
 om2_est=nan(N,1);
@@ -145,7 +147,7 @@ for i=1:N
     % parameter vectors
     prc_params(8) = rho2;
     prc_params(13) = om2;
-    prc_params(15) = al;
+    prc_params(15) = al; % specify in native space
 
     % simulate
     sim = tapas_simModel(u,...
@@ -155,33 +157,35 @@ for i=1:N
         obs_params);
 
     if ~any(isnan(sim.y))
+        try
+            % fit to simulated
+            est = tapas_fitModel(...
+                sim.y,...
+                sim.u,...
+                prc_model_config,...
+                obs_model_config,...
+                optim_config);
         
-        % fit to simulated
-        est = tapas_fitModel(...
-            sim.y,...
-            sim.u,...
-            prc_model_config,...
-            obs_model_config,...
-            optim_config);
-    
-        % get estimated parameters
-        om2_sim(i) = om2;
-        rho2_sim(i) = rho2;
-        al_sim(i) = al;
-        om2_est(i) = est.p_prc.om(2);
-        rho2_est(i) = est.p_prc.rho(2);
-        al_est(i) = est.p_prc.al;
+            % get estimated parameters
+            om2_sim(i) = om2;
+            rho2_sim(i) = rho2;
+            al_sim(i) = al;
+            om2_est(i) = est.p_prc.om(2);
+            rho2_est(i) = est.p_prc.rho(2);
+            al_est(i) = est.p_prc.al;
+        catch
+
+        end
     end
 end
 
 
-figure('name', 'om2'); scatter(om2_sim, om2_est);
-figure('name', 'rho2'); scatter(rho2_sim, rho2_est);
-figure('name', 'al'); scatter(al_sim, al_est);
+figure('name', 'om2'); scatter(om2_sim, om2_est); xlabel('Simulated'); ylabel('Estimated'); title('Omega2');
+figure('name', 'rho2'); scatter(rho2_sim, rho2_est); xlabel('Simulated'); ylabel('Estimated'); title('Rho');
+figure('name', 'al'); scatter(al_sim, al_est); xlabel('Simulated'); ylabel('Estimated'); title('Alpha');
 
 
 save('STE_model1_recovery.mat', 'om2_sim', 'om2_est', 'rho2_sim', 'rho2_est', 'al_sim', 'al_est');
-
 
 
 
@@ -189,10 +193,9 @@ save('STE_model1_recovery.mat', 'om2_sim', 'om2_est', 'rho2_sim', 'rho2_est', 'a
 
 close all;
 
-prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model %%%%% Do I need to keep loading this?
-obs_model_config = obs1_comb_obs_config();%tapas_logrt_linear_binary_config(); % response model
-optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
-optim_config.nRandInit = 5;
+
+optim_config.nRandInit = 10;
+
 
 data_dir=[pwd,'\STE_data\'];
 STE_files = dir(fullfile(data_dir, '*.csv'));
