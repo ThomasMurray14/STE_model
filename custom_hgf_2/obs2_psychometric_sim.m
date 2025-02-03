@@ -4,6 +4,8 @@ function y = obs2_psychometric_sim(r, infStates, p)
 % Get parameters
 b0  = p(1);
 b1  = p(2);
+beta = p(3); % shape parameter
+
 
 % Number of trials
 n = size(infStates,1);
@@ -14,13 +16,14 @@ intensity = r.u(:,2);
 % get volatility
 mu3 = infStates(:,3,3); % use third level
 
+
 % estimate trialwise PSE
 PSE = b0 + b1.*exp(mu3);
 
 % Predict response using psychometric function
 gamma = 0;
 lambda = 0;
-beta = 3; % Shape parameter (fixed for now)
+
 
 prob = nan(n, 1);
 for i = 1:n
@@ -35,6 +38,7 @@ end
 
 % Simulate
 y = binornd(1, prob);
+
 
 
 end

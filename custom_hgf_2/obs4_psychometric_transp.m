@@ -1,4 +1,4 @@
-function [pvec, pstruct] = obs2_psychometric_transp(r, ptrans)
+function [pvec, pstruct] = obs4_psychometric_transp(r, ptrans)
 
 pvec    = NaN(1,length(ptrans));
 pstruct = struct;
@@ -9,8 +9,8 @@ pstruct.b0 = pvec(1);
 pvec(2)    = ptrans(2); % b1
 pstruct.b1 = pvec(2);
 
-pvec(3)    = exp(ptrans(3)); % beta
-pstruct.beta = pvec(3);
+pvec(3)    = ptrans(3); % alpha
+pstruct.zeta = pvec(3);
 
 
 end

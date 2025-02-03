@@ -180,12 +180,61 @@ for i=1:N
 end
 
 
-figure('name', 'om2'); scatter(om2_sim, om2_est); xlabel('Simulated'); ylabel('Estimated'); title('Omega2');
-figure('name', 'rho2'); scatter(rho2_sim, rho2_est); xlabel('Simulated'); ylabel('Estimated'); title('Rho');
-figure('name', 'al'); scatter(al_sim, al_est); xlabel('Simulated'); ylabel('Estimated'); title('Alpha');
+figure('name', 'om2');  hold on; scatter(om2_sim, om2_est);     refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Omega2');
+figure('name', 'rho2'); hold on; scatter(rho2_sim, rho2_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Rho');
+figure('name', 'al');   hold on; scatter(al_sim, al_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Alpha');
 
 
 save('STE_model1_recovery.mat', 'om2_sim', 'om2_est', 'rho2_sim', 'rho2_est', 'al_sim', 'al_est');
+
+
+
+%% Simulate psychometric functions
+
+% config structures
+prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
+obs_model_config = obs1_comb_obs_config(); % response model
+optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
+optim_config.nRandInit = 5;
+
+
+figure('name', 'simulated psychometric'); hold on;
+
+for rho = [-1, -.5, 0, .5, 1]
+    
+    prc_model_config.logalmu = log(.5);
+    prc_model_config.rhomu(2) = rho;
+    prc_model_config.ommu(2)=-2;
+    prc_model_config = tapas_align_priors(prc_model_config);
+    
+    r_temp = [];
+    r_temp.c_prc.n_levels = 3;
+    prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
+    
+    obs_params = obs_model_config.priormus;
+    obs_params(1) = exp(obs_params(1));
+    obs_params(7) = exp(obs_params(7));
+    
+    sim = tapas_simModel(u_sub,...
+        'prc1_ehgf_binary_pu_tbt',...
+        prc_params,...
+        'obs1_comb_obs',...
+        obs_params,...
+        123456789);
+    
+    
+    % Visualise Psychometric
+    % y is "correct"
+    sim_sad = (sub_data.p_sad>.5 & sim.y(:,1)==1) + (sub_data.p_sad<.5 & sim.y(:,1)==0);
+    
+    sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
+    plot(0:20:100, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\rho = %1.1f', rho));
+end
+
+set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
+ylabel('p(Sad)')
+xlabel('%Sad')
+legend()
 
 
 

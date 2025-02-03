@@ -3,14 +3,6 @@
 % prc model is normal binary HGF, but edited to ignore column 2 of u
 
 
-% Tricky... The trial-wise slope parameter needs to be positive, so in
-% obs3_psychometric model it is estimated for each subject in log space.
-% But here, it's calculated on each trial based on regression coefficients
-% and x3. Maybe need to standardise x3 (i.e. 0-1)? 
-##############
-
-
-
 close all; clear;
 addpath('custom_hgf_2');
 
@@ -33,7 +25,7 @@ u_sub = u;
 %% simulate responses
 
 prc_model_config = prc2_ehgf_binary_config(); % perceptual model
-obs_model_config = obs4_psychometric_config(); % response model
+obs_model_config = obs3_psychometric_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 10;
 
@@ -49,7 +41,7 @@ obs_params = obs3_psychometric_transp([], obs_model_config.priormus);
 sim = tapas_simModel(u_sub,...
     'prc2_ehgf_binary',...
     prc_params,...
-    'obs4_psychometric',...
+    'obs3_psychometric',...
     obs_params,...
     123456789);
 
@@ -163,7 +155,7 @@ optim_config.nRandInit = 10;
 
 figure; hold on;
 
-for zeta = [1, 10, 50]
+for zeta = [.3, .5, .7]
 
     prc_model_config.ommu(2) = -3;
     prc_model_config.ommu(3) = -2;
@@ -187,7 +179,7 @@ for zeta = [1, 10, 50]
     % visualise psychometric
     sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.p_sad==x), 'omitnan'), 0:.2:1);
     % figure('name', 'simulated psychometric'); hold on;
-    plot(0:.2:1, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\zeta = %1.1f', zeta));
+    plot(0:.2:1, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\beta_0 = %1.1f', b0));
     
 end
 
