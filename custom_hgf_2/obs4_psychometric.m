@@ -26,7 +26,7 @@ yhat = NaN(n,1);
 mu3 = infStates(:,3,3); % use third level
 
 % trial-wise slope
-zeta = b0 + b1.*exp(mu3);
+zeta = exp(b0 + b1.*exp(mu3));
 
 % Get stimulus intensity
 intensity = r.u(:,2);

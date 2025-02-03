@@ -16,7 +16,7 @@ intensity = r.u(:,2);
 mu3 = infStates(:,3,3); % use third level
 
 % estimate trialwise slope
-zeta = b0 + b1.*exp(mu3);
+zeta = exp(b0 + b1.*exp(mu3));
 
 % set gamma/lambda
 gamma = 0;

@@ -7,8 +7,9 @@
 % obs3_psychometric model it is estimated for each subject in log space.
 % But here, it's calculated on each trial based on regression coefficients
 % and x3. Maybe need to standardise x3 (i.e. 0-1)? 
-##############
 
+% ChatGPT suggests esimating B0 and B1 in native space, then calculating
+% slope within model as zeta = exp(B0 + B1*x3)
 
 
 close all; clear;
@@ -42,8 +43,10 @@ r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = prc2_ehgf_binary_transp(r_temp, prc_model_config.priormus);
 
-% obs_model_config.b1mu = .2;
-obs_params = obs3_psychometric_transp([], obs_model_config.priormus);
+b0 = log(10);
+b1 = 1;
+alpha = .5;
+obs_params = [b0, b1, alpha];
 
 
 sim = tapas_simModel(u_sub,...
