@@ -15,12 +15,12 @@ c.model = 'obs3_psychometric_config';
 
 % Sufficient statistics of Gaussian parameter priors
 % B0
-c.logb0mu = log(20);
-c.logb0sa = 8;
+c.b0mu = 2.5;
+c.b0sa = 2;
 
 % B1
-c.logb1mu = log(.5);
-c.logb1sa = 2;
+c.b1mu = 0;
+c.b1sa = 2;
 
 % Alpha (PSE)
 c.alphamu = .5;
@@ -29,14 +29,14 @@ c.alphasa = 1;
 
 % Gather prior settings in vectors
 c.priormus = [
-    c.logb0mu,...
-    c.logb1mu,...
+    c.b0mu,...
+    c.b1mu,...
     c.alphamu,...
          ];
 
 c.priorsas = [
-    c.logb0sa,...
-    c.logb1sa,...
+    c.b0sa,...
+    c.b1sa,...
     c.alphasa,...
          ];
 

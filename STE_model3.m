@@ -44,8 +44,8 @@ r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = prc2_ehgf_binary_transp(r_temp, prc_model_config.priormus);
 
-b0 = log(20);
-b1 = log(1.1);
+b0 = 2.5;
+b1 = -.1;
 alpha = .5;
 obs_params = [b0, b1, alpha];
 
@@ -70,10 +70,10 @@ optim_config.nRandInit = 5;
 
 
 % estimate regression coefficients
-obs_model_config.alphasa=.2;
-obs_model_config.logb0sa=8;
-obs_model_config.logb1sa=2;
-obs_model_config = tapas_align_priors(obs_model_config);
+% obs_model_config.alphasa=.2;
+% obs_model_config.b0sa=8;
+% obs_model_config.b1sa=2;
+% obs_model_config = tapas_align_priors(obs_model_config);
 
 est = tapas_fitModel(...
     sim.y,...
@@ -93,11 +93,11 @@ tapas_hgf_binary_plotTraj(est)
 om2_range = [-5 1];
 om3_range = [-5 1];
 alpha_range = [.1, .9];
-b0_range = [1 60];
-b1_range = [.01, 1.5];
+b0_range = [-2 5];
+b1_range = [-1, 1];
 
 
-N=10;
+N=300;
 [om2_sim, om2_est, om3_sim, om3_est, b0_sim, b0_est, b1_sim, b1_est, alpha_sim, alpha_est] = deal(nan(N,1));
 
 
@@ -112,7 +112,7 @@ for i=1:N
     % parameter vectors
     prc_params(13) = om2;
     prc_params(14) = om3;
-    obs_params = [log(b0), log(b1), alpha];
+    obs_params = [b0, b1, alpha];
 
     % simulate
     try
@@ -157,7 +157,7 @@ figure('name', 'b1');   hold on; scatter(b1_sim, b1_est);       refline(1,0); xl
 figure('name', 'alpha'); hold on; scatter(alpha_sim, alpha_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Alpha');
 
 
-% save('STE_model3_recovery.mat', 'om2_sim', 'om2_est', 'om3_sim', 'om3_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est', 'zeta_sim', 'zeta_est');
+save('STE_model3_recovery.mat', 'om2_sim', 'om2_est', 'om3_sim', 'om3_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est', 'alpha_sim', 'alpha_est');
 
 
 %% Psychometric functions

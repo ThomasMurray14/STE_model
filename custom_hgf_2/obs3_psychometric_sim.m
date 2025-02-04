@@ -2,8 +2,8 @@ function y = obs3_psychometric_sim(r, infStates, p)
 
 
 % Get parameters
-b0  = p(1); % keep in log space
-b1  = p(2); % keep in log space
+b0  = p(1);
+b1  = p(2);
 alpha = p(3); % PSE
 
 

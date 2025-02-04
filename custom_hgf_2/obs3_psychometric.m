@@ -6,8 +6,8 @@ function [logp, yhat, res] = obs3_psychometric(r, infStates, ptrans)
 % y = binary response (not in contingency space)
 
 % get parameters
-b0 = ptrans(1); % keep in log space
-b1 = ptrans(2); % keep in log space
+b0 = ptrans(1);
+b1 = ptrans(2);
 alpha = ptrans(3); % PSE
 
 
