@@ -1,7 +1,7 @@
 function c = obs3_psychometric_config
 
-% parameters for linear regression of volatility onto PSE. B0 describes
-% baseline position of PSE, B1 describes influence of volatility
+% parameters for linear regression of volatility onto slope parameter. 
+% B0 describes baseline slope, B1 describes influence of volatility
 
 % Config structure
 c = struct;
@@ -15,29 +15,29 @@ c.model = 'obs3_psychometric_config';
 
 % Sufficient statistics of Gaussian parameter priors
 % B0
-c.b0mu = .5;
-c.b0sa = 2;
+c.logb0mu = log(20);
+c.logb0sa = 8;
 
 % B1
-c.b1mu = 0;
-c.b1sa = 2;
+c.logb1mu = log(.5);
+c.logb1sa = 2;
 
-% Zeta (psychometric function slope)
-c.logzetamu = log(10);
-c.logzetasa = 16;
+% Alpha (PSE)
+c.alphamu = .5;
+c.alphasa = 1;
 
 
 % Gather prior settings in vectors
 c.priormus = [
-    c.b0mu,...
-    c.b1mu,...
-    c.logzetamu,...
+    c.logb0mu,...
+    c.logb1mu,...
+    c.alphamu,...
          ];
 
 c.priorsas = [
-    c.b0sa,...
-    c.b1sa,...
-    c.logzetasa,...
+    c.logb0sa,...
+    c.logb1sa,...
+    c.alphasa,...
          ];
 
 

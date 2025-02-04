@@ -4,6 +4,6 @@ pstruct = struct;
 
 pstruct.b0 = pvec(1);
 pstruct.b1 = pvec(2);
-pstruct.zeta = pvec(3); % native space
+pstruct.beta = pvec(3); % native space
 
 end
