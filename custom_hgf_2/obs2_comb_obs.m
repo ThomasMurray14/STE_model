@@ -64,14 +64,8 @@ ptrans_logRT = ptrans(4:9);
 
 % Compute the log likelihood (logRTs)
 [logp_reactionTime, yhat_reactionTime, res_reactionTime] = ...
-    obs2_logrt_linear_binary(r, infStates, ptrans_logRT);
+    tapas_logrt_linear_binary(r, infStates, ptrans_logRT);
 
-
-%% confidence part of the response model
-% confidence01 = r.y(:,4);
-% 
-% [logp_confidence, yhat_confidence, res_confidence] = ...
-%     tapas_softmax_binary(confidence01, infStates, ptrans);
 
 %% get combined log likelihood of two response data modalities
 logp = logp_binary + logp_reactionTime;
