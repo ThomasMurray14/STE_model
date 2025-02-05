@@ -1,4 +1,4 @@
-function [logp, yhat, res, logp_split] = obs1_comb_obs(r, infStates, ptrans)
+function [logp, yhat, res, logp_split] = obs2_comb_obs(r, infStates, ptrans)
 % [logp, yhat, res, logp_split] = m1_comb_obs(r, infStates, ptrans)
 %
 % Calculates the combined log-probability of binary and continuous
@@ -42,16 +42,18 @@ function [logp, yhat, res, logp_split] = obs1_comb_obs(r, infStates, ptrans)
 % _________________________________________________________________________
 
 
+
 %% Separate parameters
-ptrans_sgm = ptrans(1);
-ptrans_logRT = ptrans(2:7);
+ptrans_psychometric = ptrans(1:3);
+ptrans_logRT = ptrans(4:9);
 
 
-%% binary part of the response model
+%% psychometric response model
 
 % compute log likelihood (binary responses)
 [logp_binary, yhat_binary, res_binary] = ...
-    obs1_unitsq_sgm_tbt(r, infStates, ptrans_sgm);
+    obs2_psychometric(r, infStates, ptrans_psychometric);
+
 
 %% continuous part of the response model
 
@@ -62,7 +64,7 @@ ptrans_logRT = ptrans(2:7);
 
 % Compute the log likelihood (logRTs)
 [logp_reactionTime, yhat_reactionTime, res_reactionTime] = ...
-    obs1_logrt_linear_binary(r, infStates, ptrans_logRT);
+    obs2_logrt_linear_binary(r, infStates, ptrans_logRT);
 
 
 %% confidence part of the response model

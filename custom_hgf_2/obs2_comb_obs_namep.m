@@ -1,20 +1,16 @@
-function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
-% [y, yhat] = m1_comb_obs_sim(r, infStates, p)
+function [pstruct] = obs2_comb_obs_namep(pvec)
+% [pstruct] = m1_comb_obs_namep(pvec)
 %
-% Simulates responses for binary and continuous data modality.
+% Creates a struct with a field for each parameter from parameter vector.
 % (Designed to be compatible with the HGF Toolbox as part of TAPAS).
 %
 % INPUT
-%   r             struct      Struct obtained from tapas_simModel.m fct
-%   infStates     tensor      Tensor containing inferred states from the
-%                             perceptual model    
-%   p             vector      1xP vector with free param values (nat space)
+%   pvec       vector        1xP vector containing model params
 %
 %   OPTIONAL:
 %
 % OUTPUT    
-%   y             matrix       Nx2 matrix with simulated responses
-%   yhat          matrix       Nx2 matrix containing noise-free predictions
+%   pstruct      struct      Struct with fields for mdoel params
 %
 % _________________________________________________________________________
 % Author: Alex Hess
@@ -39,22 +35,16 @@ function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
 % _________________________________________________________________________
 
 
+pstruct = struct;
 
-%% Separate parameters
+pstruct.b0 = pvec(1);
+pstruct.b1 = pvec(2);
+pstruct.zeta = pvec(3);
+pstruct.beta0 = pvec(4);
+pstruct.beta1 = pvec(5);
+pstruct.beta2 = pvec(6);
+pstruct.beta3 = pvec(7);
+pstruct.beta4 = pvec(8);
+pstruct.sa = pvec(9);
 
-p_sgm = p(1);
-p_logRT = p(2:7);
-
-
-%% Run sim for binary predictions
-[pred, yhat_pred] = obs1_unitsq_sgm_tbt_sim(r, infStates, p_sgm);
-
-%% Run sim for continuous data modality (logRTs)
-[logReactionTime, yhat_rt] = obs1_logrt_linear_binary_sim(r, infStates, p_logRT);
-
-%% save values for both response data modalities
-y = [pred logReactionTime];
-yhat = [yhat_pred yhat_rt];
-
-end
-
+return;

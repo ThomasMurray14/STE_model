@@ -1,4 +1,4 @@
-function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
+function [y, yhat] = obs2_comb_obs_sim(r, infStates, p)
 % [y, yhat] = m1_comb_obs_sim(r, infStates, p)
 %
 % Simulates responses for binary and continuous data modality.
@@ -42,12 +42,12 @@ function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
 
 %% Separate parameters
 
-p_sgm = p(1);
-p_logRT = p(2:7);
+p_psychometric = p(1:3);
+p_logRT = p(4:9);
 
 
 %% Run sim for binary predictions
-[pred, yhat_pred] = obs1_unitsq_sgm_tbt_sim(r, infStates, p_sgm);
+[pred, yhat_pred] = obs1_unitsq_sgm_tbt_sim(r, infStates, p_psychometric);
 
 %% Run sim for continuous data modality (logRTs)
 [logReactionTime, yhat_rt] = obs1_logrt_linear_binary_sim(r, infStates, p_logRT);

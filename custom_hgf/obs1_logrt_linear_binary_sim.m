@@ -39,12 +39,12 @@ function [y, logrt] = obs1_logrt_linear_binary_sim(r, infStates, p)
 % _________________________________________________________________________
 
 % Get parameters
-be0  = p(2);
-be1  = p(3);
-be2  = p(4);
-be3  = p(5);
-be4  = p(6);
-sa   = p(length(p));
+be0  = p(1);
+be1  = p(2);
+be2  = p(3);
+be3  = p(4);
+be4  = p(5);
+sa   = p(6);
 
 % Number of trials
 n = size(infStates,1);

@@ -43,12 +43,12 @@ function [logp, yhat, res] = obs1_logrt_linear_binary(r, infStates, ptrans)
 % _________________________________________________________________________
 
 % Transform parameters to their native space
-be0  = ptrans(2);
-be1  = ptrans(3);
-be2  = ptrans(4);
-be3  = ptrans(5);
-be4  = ptrans(6);
-sa   = exp(ptrans(7));
+be0  = ptrans(1);
+be1  = ptrans(2);
+be2  = ptrans(3);
+be3  = ptrans(4);
+be4  = ptrans(5);
+sa   = exp(ptrans(6));
 
 % Initialize returned log-probabilities, predictions,
 % and residuals as NaNs so that NaN is returned for all

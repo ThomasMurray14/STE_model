@@ -1,0 +1,28 @@
+% Perceptual = binary HGF; 
+% response = combined psychometric (prediction of PSE) / logRT
+
+% prc model is normal binary HGF, but edited to ignore column 2 of u
+
+
+% All the parameters are called beta... b0, b1, and zeta are for the
+% psychometric; beta0, beta1, etc are for the logRT
+
+
+close all; clear;
+addpath('custom_hgf_2');
+
+% example data (to get contingencies etc)
+sub_data = readtable('STE_data\10369536_A_Threat.csv');
+
+% input in contingency space
+state = double(sub_data.Cue_idx == sub_data.Outcome_idx);
+
+% stimulus intensity
+sub_data.p_sad = sub_data.Outcome_p_sad/100;
+
+% model input
+u = [state, sub_data.p_sad];
+
+u_sub = u;
+
+
