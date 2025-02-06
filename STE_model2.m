@@ -31,11 +31,18 @@ optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 10;
 
 
+% prc_model_config.ommu(3) = 0;
+% prc_model_config.omsa(3) = 0;
+% prc_model_config.logkamu(2) = -inf;
+
+prc_model_config = tapas_align_priors(prc_model_config);
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
 prc_params = prc2_ehgf_binary_transp(r_temp, prc_model_config.priormus);
 
+
 % obs_model_config.b1mu = .2;
+obs_model_config = tapas_align_priors(obs_model_config);
 obs_params = obs2_psychometric_transp([], obs_model_config.priormus);
 
 
@@ -57,10 +64,13 @@ set(gca, 'Ylim', [0,1], 'Xtick', 0:.2:1)
 
 optim_config.nRandInit = 5;
 
+% prc_model_config.ommu(3) = 0;
+% prc_model_config.omsa(3)=0;
+prc_model_config = tapas_align_priors(prc_model_config);
 
 % estimate regression coefficients
 obs_model_config.b0sa=2;
-obs_model_config.b1sa=2;
+obs_model_config.b1sa=0;
 obs_model_config = tapas_align_priors(obs_model_config);
 
 est = tapas_fitModel(...

@@ -50,14 +50,29 @@ sim = tapas_simModel(u_sub,...
     obs_params,...
     123456789);
 
+% visualise psychometric
+sim_psychometric = arrayfun(@(x) mean(sim.y(sub_data.p_sad==x, 1), 'omitnan'), 0:.2:1);
+figure('name', 'simulated psychometric'); hold on;
+plot(0:.2:1, sim_psychometric, 'linewidth', 3);
+set(gca, 'Ylim', [0,1], 'Xtick', 0:.2:1)
+xlabel('%Sad')
+ylabel('p(Sad)')
+
+% visualise RT distribution
+sim_RTdist = arrayfun(@(x) mean(sim.y(sub_data.p_sad==x, 2), 'omitnan'), 0:.2:1);
+figure('name', 'simulated RT'); hold on;
+plot(0:.2:1, sim_RTdist, 'linewidth', 3);
+set(gca, 'Xtick', 0:.2:1)
+xlabel('%Sad');
+ylabel('p(Sad)');
 
 %% recover parameters
 
 optim_config.nRandInit = 5;
 
 % estimate regression coefficients
-obs_model_config.b0sa=2;
-obs_model_config.b1sa=2;
+% obs_model_config.b0sa=2;
+% obs_model_config.b1sa=2;
 obs_model_config = tapas_align_priors(obs_model_config);
 
 est = tapas_fitModel(...
