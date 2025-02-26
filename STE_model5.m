@@ -1,5 +1,5 @@
 % Perceptual = VKF
-% response = Psychometric (prediction of PSE)
+% response = Psychometric (prediction of slope)
 
 
 close all; clear;
@@ -23,7 +23,7 @@ u_sub = u;
 %% simulate responses
 
 prc_model_config = prc_vkf_binary_config(); % perceptual model
-obs_model_config = obs2_psychometric_config(); % response model
+obs_model_config = obs3_psychometric_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 10;
 
@@ -33,15 +33,15 @@ omega = .1;
 w0 = omega;
 prc_params = [lambda, v0, omega, w0];
 
-b0 = .5;
-b1 = 0;
-zeta = 10;
-obs_params = [b0, b1, zeta];
+b0 = 2.5;
+b1 = -.1;
+alpha = .5;
+obs_params = [b0, b1, alpha];
 
 sim = tapas_simModel(u_sub,...
     'prc_vkf_binary',...
     prc_params,...
-    'obs2_psychometric',...
+    'obs3_psychometric',...
     obs_params,...
     123456789);
 
@@ -75,8 +75,8 @@ est = tapas_fitModel(...
     optim_config);
 
 tapas_fit_plotCorr(est)
-
 plot_vkf(est);
+
 
 
 %% full parameter recovery
@@ -84,34 +84,35 @@ plot_vkf(est);
 
 lambda_range = [0 1];
 omega_range = [0 8];
-b0_range = [.1 .9];
-b1_range = [-.5, .5];
-zeta_range = [.1, 40];
+alpha_range = [.1, .9];
+b0_range = [-2 5];
+b1_range = [-1, 1];
 
 
 N=300;
-[lambda_sim, lambda_est, omega_sim, omega_est, b0_sim, b0_est, b1_sim, b1_est, zeta_sim, zeta_est] = deal(nan(N,1));
+[lambda_sim, lambda_est, omega_sim, omega_est, b0_sim, b0_est, b1_sim, b1_est, alpha_sim, alpha_est] = deal(nan(N,1));
+
 
 for i=1:N
     % get parameters to simulate
-    lambda  = lambda_range(1)   + (lambda_range(2)  -lambda_range(1))   *rand;
-    omega   = omega_range(1)    + (omega_range(2)   -omega_range(1))    *rand;
-    b0      = b0_range(1)       + (b0_range(2)      -b0_range(1))       *rand;
-    b1      = b1_range(1)       + (b1_range(2)      -b1_range(1))       *rand;
-    zeta    = zeta_range(1)     + (zeta_range(2)    -zeta_range(1))     *rand;
+    lambda = lambda_range(1) + (lambda_range(2)-lambda_range(1))*rand;
+    omega = omega_range(1) + (omega_range(2)-omega_range(1))*rand;
+    b0 = b0_range(1) + (b0_range(2)-b0_range(1))*rand;
+    b1 = b1_range(1) + (b1_range(2)-b1_range(1))*rand;
+    alpha = alpha_range(1) + (alpha_range(2)-alpha_range(1))*rand;
 
     % parameter vectors
     v0 = .2; % fix
     w0 = .2; % fix
     prc_params = [lambda, v0, omega, w0];
-    obs_params = [b0, b1, zeta];
+    obs_params = [b0, b1, alpha];
 
     % simulate
     try
     sim = tapas_simModel(u,...
         'prc_vkf_binary',...
         prc_params,...
-        'obs2_psychometric',...
+        'obs3_psychometric',...
         obs_params);
 
         if ~any(isnan(sim.y))
@@ -125,33 +126,29 @@ for i=1:N
                 optim_config);
         
             % get estimated parameters
-            lambda_sim(i)   = lambda;
-            omega_sim(i)    = omega;
+            lambda_sim(i) = lambda;
+            omega_sim(i) = omega;
             b0_sim(i) = b0;
             b1_sim(i) = b1;
-            zeta_sim(i) = zeta;
-
-            lambda_est(i)   = est.p_prc.lambda;
-            omega_est(i)    = est.p_prc.omega;
+            alpha_sim(i) = alpha;
+            lambda_est(i) = est.p_prc.lambda;
+            omega_est(i) = est.p_prc.omega;
             b0_est(i) = est.p_obs.b0;
             b1_est(i) = est.p_obs.b1;
-            zeta_est(i) = est.p_obs.zeta;
+            alpha_est(i) = est.p_obs.alpha;
         end
     catch
     end
 end
 
 
-figure('name', 'lambda');   hold on; scatter(lambda_sim, lambda_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Lambda');
-figure('name', 'omega');   hold on; scatter(omega_sim, omega_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Omega');
+figure('name', 'lambda');  hold on; scatter(lambda_sim, lambda_est);     refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Lambda');
+figure('name', 'omega');  hold on; scatter(omega_sim, omega_est);     refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Omega');
 figure('name', 'b0');   hold on; scatter(b0_sim, b0_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B0');
 figure('name', 'b1');   hold on; scatter(b1_sim, b1_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B1');
-figure('name', 'zeta'); hold on; scatter(zeta_sim, zeta_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Zeta');
+figure('name', 'alpha'); hold on; scatter(alpha_sim, alpha_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Alpha');
 
-save('STE_model4_recovery.mat', 'lambda_sim', 'lambda_est', 'omega_sim', 'omega_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est', 'zeta_sim', 'zeta_est');
-
-
-
+save('STE_model5_recovery.mat', 'lambda_sim', 'lambda_est', 'omega_sim', 'omega_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est', 'alpha_sim', 'alpha_est');
 
 
 

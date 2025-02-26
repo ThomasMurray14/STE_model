@@ -1,5 +1,5 @@
 % Perceptual = binary HGF; 
-% % response = Psychometric (prediction of slope)
+% response = Psychometric (prediction of slope)
 
 % prc model is normal binary HGF, but edited to ignore column 2 of u
 
