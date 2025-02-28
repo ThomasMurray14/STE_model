@@ -11,7 +11,7 @@ c = struct;
 c.predorpost = 2; % Posteriors
 
 % Model name
-c.model = 'obs2_psychometric_config';
+c.model = 'obs2_psychometric';
 
 % Sufficient statistics of Gaussian parameter priors
 % B0

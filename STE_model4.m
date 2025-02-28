@@ -74,49 +74,47 @@ est = tapas_fitModel(...
     obs_model_config,...
     optim_config);
 
-tapas_fit_plotCorr(est)
-
-plot_vkf(est);
+% tapas_fit_plotCorr(est)
+% plot_vkf(est);
 
 
 %% full parameter recovery
 
 
-lambda_range = [0 1];
-omega_range = [0 8];
-b0_range = [.1 .9];
-b1_range = [-.5, .5];
-zeta_range = [.1, 40];
+close all;
 
+% reload model configs
+prc_model_config = prc_vkf_binary_config(); % perceptual model
+obs_model_config = obs2_psychometric_config(); % response model
 
-N=300;
+% set priors
+prc_model_config.logv0mu = log(.2);
+prc_model_config.logv0sa = 0;
+prc_model_config.logw0mu = log(.2);
+prc_model_config.logw0sa = 0;
+prc_model_config = tapas_align_priors(prc_model_config);
+
+obs_model_config.b0sa=2;
+obs_model_config.b1sa=2;
+obs_model_config.logzetasa=4;
+obs_model_config = tapas_align_priors(obs_model_config);
+
+% set N iterations
+N = 300;
+
+% preallocate sim and est parameters
 [lambda_sim, lambda_est, omega_sim, omega_est, b0_sim, b0_est, b1_sim, b1_est, zeta_sim, zeta_est] = deal(nan(N,1));
 
-for i=1:N
-    % get parameters to simulate
-    lambda  = lambda_range(1)   + (lambda_range(2)  -lambda_range(1))   *rand;
-    omega   = omega_range(1)    + (omega_range(2)   -omega_range(1))    *rand;
-    b0      = b0_range(1)       + (b0_range(2)      -b0_range(1))       *rand;
-    b1      = b1_range(1)       + (b1_range(2)      -b1_range(1))       *rand;
-    zeta    = zeta_range(1)     + (zeta_range(2)    -zeta_range(1))     *rand;
+for i = 1:N
+    sim = tapas_sampleModel(u, prc_model_config, obs_model_config);
+    lambda_sim(i) = sim.p_prc.lambda;
+    omega_sim(i)  = sim.p_prc.omega;
+    b0_sim(i)   = sim.p_obs.b0;
+    b1_sim(i)   = sim.p_obs.b1;
+    zeta_sim(i) = sim.p_obs.zeta;
 
-    % parameter vectors
-    v0 = .2; % fix
-    w0 = .2; % fix
-    prc_params = [lambda, v0, omega, w0];
-    obs_params = [b0, b1, zeta];
-
-    % simulate
-    try
-    sim = tapas_simModel(u,...
-        'prc_vkf_binary',...
-        prc_params,...
-        'obs2_psychometric',...
-        obs_params);
-
-        if ~any(isnan(sim.y))
-        
-            % fit to simulated
+    if ~any(isnan(sim.y)) % only no missing trials
+        try
             est = tapas_fitModel(...
                 sim.y,...
                 sim.u,...
@@ -125,33 +123,103 @@ for i=1:N
                 optim_config);
         
             % get estimated parameters
-            lambda_sim(i)   = lambda;
-            omega_sim(i)    = omega;
-            b0_sim(i) = b0;
-            b1_sim(i) = b1;
-            zeta_sim(i) = zeta;
-
-            lambda_est(i)   = est.p_prc.lambda;
-            omega_est(i)    = est.p_prc.omega;
-            b0_est(i) = est.p_obs.b0;
-            b1_est(i) = est.p_obs.b1;
-            zeta_est(i) = est.p_obs.zeta;
+            if ~isinf(est.optim.LME)
+                lambda_est(i)   = est.p_prc.lambda;
+                omega_est(i)    = est.p_prc.omega;
+                b0_est(i)       = est.p_obs.b0;
+                b1_est(i)       = est.p_obs.b1;
+                zeta_est(i)     = est.p_obs.zeta;
+            end
+        catch
+            fprintf('\nCannot fit')
         end
-    catch
     end
 end
 
-
-figure('name', 'lambda');   hold on; scatter(lambda_sim, lambda_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Lambda');
-figure('name', 'omega');   hold on; scatter(omega_sim, omega_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Omega');
-figure('name', 'b0');   hold on; scatter(b0_sim, b0_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B0');
-figure('name', 'b1');   hold on; scatter(b1_sim, b1_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B1');
-figure('name', 'zeta'); hold on; scatter(zeta_sim, zeta_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Zeta');
+% figure('name', 'lambda');   hold on; scatter(lambda_sim, lambda_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Lambda');
+% figure('name', 'omega');   hold on; scatter(omega_sim, omega_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Omega');
+% figure('name', 'b0');   hold on; scatter(b0_sim, b0_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B0');
+% figure('name', 'b1');   hold on; scatter(b1_sim, b1_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B1');
+% figure('name', 'zeta'); hold on; scatter(zeta_sim, zeta_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Zeta');
 
 save('STE_model4_recovery.mat', 'lambda_sim', 'lambda_est', 'omega_sim', 'omega_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est', 'zeta_sim', 'zeta_est');
 
 
 
+
+
+%% full parameter recovery (OLD)
+% 
+% lambda_range = [0 1];
+% omega_range = [0 8];
+% b0_range = [.1 .9];
+% b1_range = [-.5, .5];
+% zeta_range = [.1, 40];
+% 
+% 
+% N=300;
+% [lambda_sim, lambda_est, omega_sim, omega_est, b0_sim, b0_est, b1_sim, b1_est, zeta_sim, zeta_est] = deal(nan(N,1));
+% 
+% for i=1:N
+%     % get parameters to simulate
+%     lambda  = lambda_range(1)   + (lambda_range(2)  -lambda_range(1))   *rand;
+%     omega   = omega_range(1)    + (omega_range(2)   -omega_range(1))    *rand;
+%     b0      = b0_range(1)       + (b0_range(2)      -b0_range(1))       *rand;
+%     b1      = b1_range(1)       + (b1_range(2)      -b1_range(1))       *rand;
+%     zeta    = zeta_range(1)     + (zeta_range(2)    -zeta_range(1))     *rand;
+% 
+%     % parameter vectors
+%     v0 = .2; % fix
+%     w0 = .2; % fix
+%     prc_params = [lambda, v0, omega, w0];
+%     obs_params = [b0, b1, zeta];
+% 
+%     % simulate
+%     try
+%     sim = tapas_simModel(u,...
+%         'prc_vkf_binary',...
+%         prc_params,...
+%         'obs2_psychometric',...
+%         obs_params);
+% 
+%         if ~any(isnan(sim.y))
+% 
+%             % fit to simulated
+%             est = tapas_fitModel(...
+%                 sim.y,...
+%                 sim.u,...
+%                 prc_model_config,...
+%                 obs_model_config,...
+%                 optim_config);
+% 
+%             % get estimated parameters
+%             lambda_sim(i)   = lambda;
+%             omega_sim(i)    = omega;
+%             b0_sim(i) = b0;
+%             b1_sim(i) = b1;
+%             zeta_sim(i) = zeta;
+% 
+%             lambda_est(i)   = est.p_prc.lambda;
+%             omega_est(i)    = est.p_prc.omega;
+%             b0_est(i) = est.p_obs.b0;
+%             b1_est(i) = est.p_obs.b1;
+%             zeta_est(i) = est.p_obs.zeta;
+%         end
+%     catch
+%     end
+% end
+% 
+% 
+% figure('name', 'lambda');   hold on; scatter(lambda_sim, lambda_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Lambda');
+% figure('name', 'omega');   hold on; scatter(omega_sim, omega_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Omega');
+% figure('name', 'b0');   hold on; scatter(b0_sim, b0_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B0');
+% figure('name', 'b1');   hold on; scatter(b1_sim, b1_est);       refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('B1');
+% figure('name', 'zeta'); hold on; scatter(zeta_sim, zeta_est);   refline(1,0); xlabel('Simulated'); ylabel('Estimated'); title('Zeta');
+% 
+% save('STE_model4_recovery.mat', 'lambda_sim', 'lambda_est', 'omega_sim', 'omega_est', 'b0_sim', 'b0_est', 'b1_sim', 'b1_est', 'zeta_sim', 'zeta_est');
+% 
+% 
+% 
 
 
 
