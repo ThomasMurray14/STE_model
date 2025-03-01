@@ -54,7 +54,7 @@ STE_dir = dir('STE_data\*.csv');
 N_files = numel(STE_dir);
 model_fits(N_files) = struct('ID', [], 'group', '', 'condition', '', 'model_fit', struct());
 
-for i = 1:N_files;
+for i = 1:N_files
     % get ID, group, condition
     f_name = fullfile(STE_dir(i).folder, STE_dir(i).name);
     [~,name,~] = fileparts(f_name);
