@@ -82,7 +82,7 @@ for i = 1:N_files
     end
 end
 
-save('STE_model5_fits.mat', model_fits);
+save('STE_model5_fits.mat', 'model_fits');
 
 
 
