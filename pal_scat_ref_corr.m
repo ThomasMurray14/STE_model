@@ -1,11 +1,12 @@
-function pal_scat_ref_corr(x,y)
+function f = pal_scat_ref_corr(sim,est, name)
 
-scatter(x,y, [], 'blue', 'filled', 'MarkerFaceAlpha', 0.5)
+scatter(sim,est, [], 'blue', 'filled', 'MarkerFaceAlpha', 0.5)
 
-corr_string = sprintf("Pearson's r = %.3f\nSpearman's \\rho = %.3f\nKendall's \\tau = %.3f", ...
-    corr(x, y), ...
-    corr(x, y, 'type', 'Spearman'), ...
-    corr(x, y, 'type', 'Kendall'));
+corr_string = sprintf("%s\nPearson's r = %.3f; Spearman's \\rho = %.3f; Kendall's \\tau = %.3f", ...
+    name,...
+    corr(sim, est), ...
+    corr(sim, est, 'type', 'Spearman'), ...
+    corr(sim, est, 'type', 'Kendall'));
 
 set_title = corr_string;
 
@@ -15,5 +16,7 @@ h=refline(1,0);
 h.LineStyle="--";
 h.LineWidth=1.2;
 h.Color="r";
+
+f = gcf;
 
 end

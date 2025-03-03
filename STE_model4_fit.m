@@ -44,7 +44,7 @@ obs_model_config = tapas_align_priors(obs_model_config);
 
 STE_dir = dir('STE_data\*.csv');
 N_files = numel(STE_dir);
-model_fits(N_files) = struct('ID', [], 'group', '', 'condition', '', 'model_fit', struct());
+model_fits(N_files) = struct('ID', [], 'group', '', 'condition', '', 'est', struct());
 
 for i = 1:N_files
     % get ID, group, condition
