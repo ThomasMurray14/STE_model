@@ -7,9 +7,9 @@ figdir = 'C:\Users\Tom\OneDrive - University of Cambridge\Cambridge\TOS_STE\Figu
 %%
 m1 = importdata('STE_model1_recovery.mat');
 pal_scat_ref_corr(m1.al_sim,        m1.al_est,      'alpha',    [figdir, '\model1_recovery_alpha.bmp']);
+pal_scat_ref_corr(log(m1.al_sim),   log(m1.al_est), 'log(alpha)', [figdir, '\model1_recovery_logalpha.bmp']);
 pal_scat_ref_corr(m1.om2_sim,       m1.om2_est,     'omega',    [figdir, '\model1_recovery_omega.bmp']);
 pal_scat_ref_corr(m1.rho2_sim,      m1.rho2_est,    'rho',      [figdir, '\model1_recovery_rho.bmp']);
-pal_scat_ref_corr(log(m1.al_sim),   log(m1.al_est), 'log(alpha)', [figdir, '\model1_recovery_logalpha.bmp']);
 
 %%
 m2 = importdata('STE_model2_recovery.mat');
@@ -38,19 +38,13 @@ pal_scat_ref_corr(m4.omega_sim,     m4.omega_est,   'omega',    [figdir, '\model
 pal_scat_ref_corr(m4.zeta_sim,      m4.zeta_est,    'zeta',     [figdir, '\model4_recovery_zeta.bmp']);
 
 
-pal_scat_ref_corr(log(m4.omega_sim),     log(m4.omega_est),   'log(omega)',    [figdir, '\model4_recovery_logomega.bmp']);
-pal_scat_ref_corr(log(m4.zeta_sim),      log(m4.zeta_est),    'log(zeta)',     [figdir, '\model4_recovery_logzeta.bmp']);
-
-
 %%
 m5 = importdata('STE_model5_recovery.mat');
 pal_scat_ref_corr(m5.b0_sim,        m5.b0_est,      'beta0',    [figdir, '\model5_recovery_beta0.bmp']);
 pal_scat_ref_corr(m5.b1_sim,        m5.b1_est,      'beta1',    [figdir, '\model5_recovery_beta1.bmp']);
-pal_scat_ref_corr(m5.alpha_sim,     m5.alpha_est,   'alpha',    [figdir, '\model5_recovery_alpha.bmp']);
+pal_scat_ref_corr(m5.alpha_sim,     m5.alpha_est,   'zeta',     [figdir, '\model5_recovery_alpha.bmp']);
 pal_scat_ref_corr(m5.lambda_sim,    m5.lambda_est,  'lambda',   [figdir, '\model5_recovery_lambda.bmp']);
 pal_scat_ref_corr(m5.omega_sim,     m5.omega_est,   'omega',    [figdir, '\model5_recovery_omega.bmp']);
-
-pal_scat_ref_corr(log(m5.omega_sim),     log(m5.omega_est),   'log(omega)',    [figdir, '\model5_recovery_logomega.bmp']);
 
 
 

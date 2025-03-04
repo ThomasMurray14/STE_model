@@ -44,6 +44,7 @@ for iP = 1:N_inc
     end
 end
 
+
 valid = ~(isnan(LMEs) + isinf(LMEs));
 LMEs_valid = LMEs(~any(~valid, 2), :);
 BICs_valid = BICs(~any(~valid, 2), :);
@@ -54,9 +55,8 @@ AICs_sum = sum(AICs_valid, 1);
 [alpha,exp_r,xp,pxp,bor] = spm_BMS(LMEs_valid);
 
 figure;
-bar(1:5, pxp, 'EdgeColor', 'none');
+bar(1:5, alpha, 'EdgeColor', 'none');
 set(gca, 'xticklabels', model_names)
-ylabel('PXP')
 title('BMS')
 
 N_fit = N_inc - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
@@ -74,13 +74,6 @@ for i = 1:5
     fprintf('\t\n%s: %1.1f', model_names{i}, BICs_sum(i));
 end
 
-
-figure; hold on;
-plot(1:5, LMEs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
-plot(1:5, mean(LMEs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
-set(gca, 'xtick', 1:5, 'xticklabels', model_names)
-ylabel('LME')
-title('All')
 
 
 
@@ -113,9 +106,8 @@ AICs_sum = sum(AICs_valid, 1);
 [alpha,exp_r,xp,pxp,bor] = spm_BMS(LMEs_valid);
 
 figure;
-bar(1:5, pxp, 'EdgeColor', 'none');
+bar(1:5, alpha, 'EdgeColor', 'none');
 set(gca, 'xticklabels', model_names)
-ylabel('PXP')
 title('BMS (Safe only)')
 
 N_fit = N_safe - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
@@ -133,31 +125,21 @@ for i = 1:5
     fprintf('\t\n%s: %1.1f', model_names{i}, BICs_sum(i));
 end
 
-figure; hold on;
-plot(1:5, LMEs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
-plot(1:5, mean(LMEs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
-set(gca, 'xtick', 1:5, 'xticklabels', model_names)
-ylabel('LME')
-title('Safe only')
-
 
 
 %% Threat only
-threat_idx = find(arrayfun(@(x) strcmp(models(1).model_fits(x).condition, 'Threat'), 1:N_inc));
-for i = 1:5
-    threat_models(i).model_fits = models(i).model_fits(threat_idx);
-end
-N_threat = numel(threat_models(1).model_fits);
+threat_idx = find(arrayfun(@(x) strcmp(models(1).model_fits(x).condition, 'Threat'), 1:400));
 
-LMEs = nan(N_threat, 5);
-BICs = nan(N_threat, 5);
-AICs = nan(N_threat, 5);
-for iP = 1:N_threat
+LMEs = nan(200, 5);
+BICs = nan(200, 5);
+AICs = nan(200, 5);
+for i = 1:200
+    iP = threat_idx(i);
     for iM = 1:5
         if ~isempty(models(iM).model_fits(iP).est)
-            LMEs(iP, iM) = threat_models(iM).model_fits(iP).est.optim.LME;
-            BICs(iP, iM) = threat_models(iM).model_fits(iP).est.optim.BIC;
-            AICs(iP, iM) = threat_models(iM).model_fits(iP).est.optim.AIC;
+            LMEs(i, iM) = models(iM).model_fits(iP).est.optim.LME;
+            BICs(i, iM) = models(iM).model_fits(iP).est.optim.BIC;
+            AICs(i, iM) = models(iM).model_fits(iP).est.optim.AIC;
         end
     end
 end
@@ -171,17 +153,16 @@ AICs_sum = sum(AICs_valid, 1);
 [alpha,exp_r,xp,pxp,bor] = spm_BMS(LMEs_valid);
 
 figure;
-bar(1:5, pxp, 'EdgeColor', 'none');
+bar(1:5, alpha, 'EdgeColor', 'none');
 set(gca, 'xticklabels', model_names)
-ylabel('PXP')
 title('BMS (Threat only)')
 
-N_fit = N_threat - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
+N_fit = 200 - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
 fprintf('\nN fit:')
 for i = 1:5
-    fprintf('\t\n%s: %i/%i', model_names{i}, N_fit(i), N_threat);
+    fprintf('\t\n%s: %i', model_names{i}, N_fit(i));
 end
-fprintf('\nBayes Ombinus Risk: %1.3f', bor);
+fprintf('\n\nBayes Ombinus Risk: %1.3f', bor);
 fprintf('\n\nAIC (sum):')
 for i = 1:5
     fprintf('\t\n%s: %1.1f', model_names{i}, AICs_sum(i));
@@ -191,12 +172,10 @@ for i = 1:5
     fprintf('\t\n%s: %1.1f', model_names{i}, BICs_sum(i));
 end
 
-figure; hold on;
-plot(1:5, LMEs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
-plot(1:5, mean(LMEs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
-set(gca, 'xtick', 1:5, 'xticklabels', model_names)
-ylabel('LME')
-title('Threat only')
+
+
+
+
 
 
 
