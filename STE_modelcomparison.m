@@ -82,7 +82,19 @@ set(gca, 'xtick', 1:5, 'xticklabels', model_names)
 ylabel('LME')
 title('All')
 
+figure; hold on;
+plot(1:5, BICs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
+plot(1:5, mean(BICs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
+set(gca, 'xtick', 1:5, 'xticklabels', model_names)
+ylabel('BIC')
+title('All')
 
+figure; hold on;
+plot(1:5, AICs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
+plot(1:5, mean(AICs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
+set(gca, 'xtick', 1:5, 'xticklabels', model_names)
+ylabel('AIC')
+title('All')
 
 %% Safe only
 safe_idx = find(arrayfun(@(x) strcmp(models(1).model_fits(x).condition, 'Safe'), 1:N_inc));
@@ -141,6 +153,20 @@ ylabel('LME')
 title('Safe only')
 
 
+figure; hold on;
+plot(1:5, BICs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
+plot(1:5, mean(BICs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
+set(gca, 'xtick', 1:5, 'xticklabels', model_names)
+ylabel('BIC')
+title('Safe only')
+
+figure; hold on;
+plot(1:5, AICs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
+plot(1:5, mean(AICs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
+set(gca, 'xtick', 1:5, 'xticklabels', model_names)
+ylabel('AIC')
+title('Safe only')
+
 
 %% Threat only
 threat_idx = find(arrayfun(@(x) strcmp(models(1).model_fits(x).condition, 'Threat'), 1:N_inc));
@@ -198,5 +224,17 @@ set(gca, 'xtick', 1:5, 'xticklabels', model_names)
 ylabel('LME')
 title('Threat only')
 
+figure; hold on;
+plot(1:5, BICs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
+plot(1:5, mean(BICs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
+set(gca, 'xtick', 1:5, 'xticklabels', model_names)
+ylabel('BIC')
+title('Threat only')
 
+figure; hold on;
+plot(1:5, AICs_valid, 'color', [0 0.4470 0.7410, .2], 'linewidth', .1)
+plot(1:5, mean(AICs_valid, 1), '-o', 'color', 'black', 'linewidth', 2, 'MarkerFaceColor', [1,1,1])
+set(gca, 'xtick', 1:5, 'xticklabels', model_names)
+ylabel('AIC')
+title('Threat only')
 
