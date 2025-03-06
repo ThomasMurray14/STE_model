@@ -9,6 +9,14 @@ function [logp, yhat, res] = obs1_unitsq_sgm_tbt(r, infStates, ptrans)
 % (either version 3 or, at your option, any later version). For further details, see the file
 % COPYING or <http://www.gnu.org/licenses/>.
 
+
+% Predictions or posteriors?
+pop = 1; % Default: predictions
+if r.c_obs.predorpost == 2
+    pop = 3; % Alternative: posteriors
+end
+
+
 % Transform zeta to its native space
 ze = exp(ptrans(1));
 
@@ -20,7 +28,7 @@ yhat = NaN(n,1);
 res  = NaN(n,1);
 
 % Weed irregular trials out from inferred states and responses
-x_state = infStates(:,1,1);
+x_state = infStates(:,1,pop);
 
 x_state(r.irr) = [];
 y = r.y(:,1);

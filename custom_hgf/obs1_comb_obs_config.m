@@ -39,8 +39,8 @@ function [c] = obs1_comb_obs_config()
 c = struct;
 
 % Is the decision based on predictions or posteriors? Comment as appropriate.
-c.predorpost = 1; % Predictions
-%c.predorpost = 2; % Posteriors
+% c.predorpost = 1; % Predictions
+c.predorpost = 2; % Posteriors
 
 % Model name
 c.model = 'obs1_comb_obs';

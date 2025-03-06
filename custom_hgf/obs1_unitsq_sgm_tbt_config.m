@@ -38,8 +38,8 @@ function c = obs1_unitsq_sgm_tbt_config
 c = struct;
 
 % Is the decision based on predictions or posteriors? Comment as appropriate.
-c.predorpost = 1; % Predictions
-%c.predorpost = 2; % Posteriors
+% c.predorpost = 1; % Predictions
+c.predorpost = 2; % Posteriors
 
 % Model name
 c.model = 'tapas_unitsq_sgm_tbt';
