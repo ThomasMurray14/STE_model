@@ -1,11 +1,19 @@
+% Model 6:
+% perceptual = eHGF (Nace remix)
+% response = sigmoid (using posterior)
+% 
+% 
+% 
 % Ok so Nace's model actually works if I use posteriors instead of
 % predictions... Well sort of - alpha seems to have the desired effect on
 % the psychometric function. However rho (sad bias) does not. So could I
 % use the trial-wise mu2 (which is determined by rho) to determine
 % psychometric PSE?
-
+% 
 % I think the problem is that rho (any bias) should affect the ambiguous
-% faces more.
+% faces more. I've tried adding a scaling factor to rho in the perceptual
+% model, so that rho is higher for more ambiguous faces, but this still
+% doesn't really work.
 
 
 %%
@@ -34,7 +42,7 @@ cue(cue==0) = -1; % balanced contrast coding for the "happy bias"
 
 % Responses
 sub_data.logRT = log(sub_data.Response_RT);
-sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx; %%% Not sure why we model correct
+sub_data.correct = sub_data.Outcome_idx == sub_data.Response_idx;
 
 % model input
 u = [sub_data.u_al, cue];
@@ -58,7 +66,7 @@ optim_config.nRandInit = 5;
 %% simulate responses
 
 prc_model_config.logalmu = log(0.1);
-prc_model_config.rhomu(2) = 2;
+prc_model_config.rhomu(2) = 0;
 prc_model_config.ommu(2)=-2;
 prc_model_config = tapas_align_priors(prc_model_config);
 
@@ -69,26 +77,41 @@ prc_params = prc3_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
 obs_params = 5; % zeta (inverse decision noise)
 
 
+N = 20;
+sim_psychometric = nan(N, 6);
 figure('name', 'simulated psychometric'); hold on;
 
-for i=1:20
-sim = tapas_simModel(u_sub,...
-    'prc3_ehgf_binary_pu_tbt',...
-    prc_params,...
-    'tapas_unitsq_sgm',...
-    obs_params);
-
-    sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+for rho = [-2 0 2]
+    prc_model_config.logalmu = log(.1);
+    prc_model_config.rhomu(2) = rho;
+    prc_model_config.ommu(2)=-2;
+    prc_model_config = tapas_align_priors(prc_model_config);
     
-    sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-    plot(0:20:100, sim_psychometric, 'linewidth', 1);
+    r_temp = [];
+    r_temp.c_prc.n_levels = 3;
+    prc_params = prc3_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
+
+    for i=1:20
+        sim = tapas_simModel(u_sub,...
+            'prc3_ehgf_binary_pu_tbt',...
+            prc_params,...
+            'tapas_unitsq_sgm',...
+            obs_params);
+    
+        sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+        sim_psychometric(i, :) = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
+        
+    end
+    sim_mean = mean(sim_psychometric, 1);
+    sim_sem = std(sim_psychometric, 1) / sqrt(20);
+
+    errorbar(0:20:100, sim_mean, sim_sem, 'linewidth', 1, 'DisplayName', sprintf('\\rho = %1.2f', rho));
 end
 
-% Visualise Psychometric
-% y is "correct"
-
+legend()
 set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
-
+xlabel('%Sad');
+ylabel('p(sad)');
 
 
 

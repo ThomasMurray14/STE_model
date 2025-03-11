@@ -60,10 +60,10 @@ c.priorsas = [
          ];
 
 % Model filehandle
-c.obs_fun = @tapas_unitsq_sgm_tbt;
+c.obs_fun = @obs1_unitsq_sgm_tbt;
 
 % Handle to function that transforms observation parameters to their native space
 % from the space they are estimated in
-c.transp_obs_fun = @tapas_unitsq_sgm_tbt_transp;
+c.transp_obs_fun = @obs1_unitsq_sgm_tbt_transp;
 
 return;

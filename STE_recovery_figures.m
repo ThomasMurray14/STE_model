@@ -55,10 +55,24 @@ pal_scat_ref_corr(log(m5.omega_sim),     log(m5.omega_est),   'log(omega)',    [
 
 
 
+%% 
+m6 = importdata('STE_model6_recovery_rho_scaled.mat');
+pal_scat_ref_corr(m6.al_sim,        m6.al_est,      'alpha',    [figdir, '\model6rhoscaled_recovery_alpha.bmp']);
+pal_scat_ref_corr(m6.om2_sim,       m6.om2_est,     'omega',    [figdir, '\model6rhoscaled_recovery_omega.bmp']);
+pal_scat_ref_corr(m6.rho2_sim,      m6.rho2_est,    'rho',      [figdir, '\model6rhoscaled_recovery_rho.bmp']);
+pal_scat_ref_corr(m6.ze_sim,        m6.ze_est,      'zeta',     [figdir, '\model6rhoscaled_recovery_zeta.bmp']);
+pal_scat_ref_corr(log(m6.al_sim),   log(m6.al_est), 'log(alpha)', [figdir, '\model6rhoscaled_recovery_logalpha.bmp']);
+pal_scat_ref_corr(log(m6.ze_sim),   log(m6.ze_est), 'log(zeta)',  [figdir, '\model6rhoscaled_recovery_logzeta.bmp']);
 
 
-
-
+%% 
+m6 = importdata('STE_model6_recovery.mat');
+pal_scat_ref_corr(m6.al_sim,        m6.al_est,      'alpha',    [figdir, '\model6_recovery_alpha.bmp']);
+pal_scat_ref_corr(m6.om2_sim,       m6.om2_est,     'omega',    [figdir, '\model6_recovery_omega.bmp']);
+pal_scat_ref_corr(m6.rho2_sim,      m6.rho2_est,    'rho',      [figdir, '\model6_recovery_rho.bmp']);
+pal_scat_ref_corr(m6.ze_sim,        m6.ze_est,      'zeta',     [figdir, '\model6_recovery_zeta.bmp']);
+pal_scat_ref_corr(log(m6.al_sim),   log(m6.al_est), 'log(alpha)', [figdir, '\model6_recovery_logalpha.bmp']);
+pal_scat_ref_corr(log(m6.ze_sim),   log(m6.ze_est), 'log(zeta)',  [figdir, '\model6_recovery_logzeta.bmp']);
 
 
 

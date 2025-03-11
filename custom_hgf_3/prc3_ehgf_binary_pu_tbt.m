@@ -105,7 +105,7 @@ for k = 2:1:n
         % Effect of input u(k)
         %%%%%%%%%%%%%%%%%%%%%%
 
-        rho_scaled = rho(2) * (1 - abs((2*u(k))-1));
+        rho_scaled = rho(2); % * (1 - abs((2*u(k))-1));
         
         % 2nd level prediction
         muhat(k,2) = mu(k-1,2) +t(k) *(rho_scaled*cue(k));
