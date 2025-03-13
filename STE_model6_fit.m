@@ -4,8 +4,7 @@
 clear;
 close all;
 
-addpath('custom_hgf');
-addpath('custom_hgf_3');
+addpath('STE_model6');
 
 %% 
 

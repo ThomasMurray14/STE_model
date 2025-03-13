@@ -12,7 +12,7 @@
 clear;
 close all;
 
-addpath('custom_hgf');
+addpath('STE_model1');
 
 %% 
 

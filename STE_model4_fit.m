@@ -4,8 +4,7 @@ clear;
 close all;
 
 %% Get model input
-addpath('custom_hgf_2');
-addpath('vkf')
+addpath('STE_model4');
 
 % example data (to get contingencies etc)
 sub_data = readtable('STE_data\10369536_A_Threat.csv');
