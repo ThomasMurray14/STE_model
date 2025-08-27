@@ -44,6 +44,7 @@ function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
 
 p_sgm = p(1); % parameter for the sigmoid model
 p_logRT = p(2:7); % parameters for the RT model
+p_softmax = p(8); % parameter for the softmax model (confidence)
 
 
 %% Run sim for binary predictions
@@ -52,9 +53,14 @@ p_logRT = p(2:7); % parameters for the RT model
 %% Run sim for continuous data modality (logRTs)
 [logReactionTime, yhat_rt] = obs1_logrt_linear_binary_sim(r, infStates, p_logRT);
 
+%% Run sim for binary confidence
+[conf_pred, yhat_conf] = obs1_softmax_binary_sim(r, infStates, p_softmax);
+
+
 %% save values for both response data modalities
-y = [pred logReactionTime];
-yhat = [yhat_pred yhat_rt];
+y = [pred, logReactionTime, conf_pred];
+yhat = [yhat_pred, yhat_rt, yhat_conf];
+
 
 end
 

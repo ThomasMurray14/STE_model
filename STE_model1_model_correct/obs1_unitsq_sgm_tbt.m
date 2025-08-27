@@ -34,21 +34,30 @@ x_state(r.irr) = [];
 y = r.y(:,1);
 y(r.irr) = [];
 
+u_al = r.u(:,1);
+state = u_al>0.5;
+
+%%%%%%%%%%%%%%%%%%%% 
+%translating x from state (contingency) space to response space
+x = x_state;
+x(state == 0) = 1-x_state(state ==0);
+
+
 
 
 % Avoid any numerical problems when taking logarithms close to 1
-logx = log(x_state);
-log1pxm1 = log1p(x_state-1);
-logx(1-x_state<1e-4) = log1pxm1(1-x_state<1e-4);
-log1mx = log(1-x_state);
-log1pmx = log1p(-x_state);
-log1mx(x_state<1e-4) = log1pmx(x_state<1e-4); 
+logx = log(x);
+log1pxm1 = log1p(x-1);
+logx(1-x<1e-4) = log1pxm1(1-x<1e-4);
+log1mx = log(1-x);
+log1pmx = log1p(-x);
+log1mx(x<1e-4) = log1pmx(x<1e-4); 
 
 
 % Calculate log-probabilities for non-irregular trials
 reg = ~ismember(1:n,r.irr);
-logp(reg) = y.*ze.*(logx -log1mx) +ze.*log1mx -log((1-x_state).^ze +x_state.^ze);
-yhat(reg) = x_state;
-res(reg) = (y-x_state)./sqrt(x_state.*(1-x_state));
+logp(reg) = y.*ze.*(logx -log1mx) +ze.*log1mx -log((1-x).^ze +x.^ze);
+yhat(reg) = x;
+res(reg) = (y-x)./sqrt(x.*(1-x));
 
 return;

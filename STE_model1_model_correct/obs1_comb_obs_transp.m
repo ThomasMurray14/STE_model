@@ -1,20 +1,18 @@
-function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
-% [y, yhat] = m1_comb_obs_sim(r, infStates, p)
+function [pvec, pstruct] = obs1_comb_obs_transp(r, ptrans)
+% [pvect, pstruct] = comb_obs_transp(r, ptrans)
 %
-% Simulates responses for binary and continuous data modality.
+% Transforms parameter values from estimation into native space.
 % (Designed to be compatible with the HGF Toolbox as part of TAPAS).
 %
 % INPUT
-%   r             struct      Struct obtained from tapas_simModel.m fct
-%   infStates     tensor      Tensor containing inferred states from the
-%                             perceptual model    
-%   p             vector      1xP vector with free param values (nat space)
+%   r            struct      Struct obtained from tapas_fitModel.m fct
+%   ptrans       vector      1xP vector containing model params (est space)
 %
 %   OPTIONAL:
 %
 % OUTPUT    
-%   y             matrix       Nx2 matrix with simulated responses
-%   yhat          matrix       Nx2 matrix containing noise-free predictions
+%   pvect        vector      1xP vector containing model params (nat space)
+%   pstruct      struct      Empty struct
 %
 % _________________________________________________________________________
 % Author: Alex Hess
@@ -38,23 +36,34 @@ function [y, yhat] = obs1_comb_obs_sim(r, infStates, p)
 % with this program. If not, see <https://www.gnu.org/licenses/>.
 % _________________________________________________________________________
 
+% empty array
+pstruct = struct();
+
+% vector with parameter values transformed back into native space
+pvec = ptrans;
 
 
-%% Separate parameters
 
-p_sgm = p(1); % parameter for the sigmoid model
-p_logRT = p(2:7); % parameters for the RT model
+pvec(1)     = exp(ptrans(1));    % ze (decision temperature (binary obs model))
+pstruct.ze  = pvec(1);
 
+pvec(2)     = ptrans(2);         % be0
+pstruct.beta0 = pvec(2);
 
-%% Run sim for binary predictions
-[pred, yhat_pred] = obs1_unitsq_sgm_tbt_sim(r, infStates, p_sgm);
+pvec(3)     = ptrans(3);         % be1
+pstruct.beta1 = pvec(3);
 
-%% Run sim for continuous data modality (logRTs)
-[logReactionTime, yhat_rt] = obs1_logrt_linear_binary_sim(r, infStates, p_logRT);
+pvec(4)     = ptrans(4);         % be2
+pstruct.beta2 = pvec(4);
 
-%% save values for both response data modalities
-y = [pred logReactionTime];
-yhat = [yhat_pred yhat_rt];
+pvec(5)     = ptrans(5);         % be3
+pstruct.beta3 = pvec(5);
+
+pvec(6)     = ptrans(6);         % be4
+pstruct.beta4 = pvec(6);
+
+pvec(7)     = exp(ptrans(7));    % sa (logRT model noise parameter)
+pstruct.sa  = pvec(7);
+
 
 end
-

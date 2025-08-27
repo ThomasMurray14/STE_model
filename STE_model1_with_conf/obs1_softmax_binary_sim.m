@@ -1,4 +1,4 @@
-function [y, prob] = obs1_unitsq_sgm_tbt_sim(r, infStates, p)
+function [y, prob] = obs1_softmax_binary_sim(r, infStates, p)
 % Simulates observations from a Bernoulli distribution
 %
 % --------------------------------------------------------------------------------------------------
@@ -15,9 +15,8 @@ if r.c_obs.predorpost == 2
     pop = 3; % Alternative: posteriors
 end
 
-x_state = infStates(:,1,pop);
-% Inverse decision temperature zeta
-ze = p;
+% Inverse decision temperature beta
+be = p;
 
 % Assumed structure of infStates:
 % dim 1: time (ie, input sequence number)
@@ -25,16 +24,17 @@ ze = p;
 % dim 3: 1: muhat, 2: sahat, 3: mu, 4: sa
 
 % Belief trajectories at 1st level
-
-% x_state(r.irr) = [];
-% y = r.y(:,1);
-% y(r.irr) = [];
+x_state = squeeze(infStates(:,1,pop));
 
 
+% need to transform contingency states into 'correct' space (a la Nace)
+u_al = r.u(:,1);
+state = u_al>0.5;
+x = x_state;
+x(state == 0) = 1-x_state(state ==0);
 
-
-% Apply the unit-square sigmoid to the inferred states
-prob = x_state.^ze./(x_state.^ze+(1-x_state).^ze);
+% Apply the logistic sigmoid to the inferred states
+prob = tapas_sgm(be.*(2.*x-1),1);
 
 % Initialize random number generator
 if isnan(r.c_sim.seed)
@@ -43,7 +43,7 @@ else
     rng(r.c_sim.seed);
 end
 
-% Simulate responses
+% Simulate
 y = binornd(1, prob);
 
 end

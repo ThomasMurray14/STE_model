@@ -30,11 +30,17 @@ ze = p;
 % y = r.y(:,1);
 % y(r.irr) = [];
 
+u_al = r.u(:,1);
+state = u_al>0.5;
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% translating x from state (contingency) space to response ("correct") space
+x = x_state;
+x(state == 0) = 1-x_state(state ==0);
 
 % Apply the unit-square sigmoid to the inferred states
-prob = x_state.^ze./(x_state.^ze+(1-x_state).^ze);
+prob = x.^ze./(x.^ze+(1-x).^ze);
 
 % Initialize random number generator
 if isnan(r.c_sim.seed)
