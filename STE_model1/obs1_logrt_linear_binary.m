@@ -77,13 +77,13 @@ mu3hat = infStates(:,3,1);
 
 
 % move variables from state (contingency space) to response space
-mu2hat_resp = mu2hat;
-mu2hat_resp(state ==0) = -mu2hat(state ==0);
+% mu2hat_resp = mu2hat;
+% mu2hat_resp(state ==0) = -mu2hat(state ==0);
 
-mu1hat_resp = mu1hat;
-mu1hat_resp(state ==0) = 1-mu1hat(state ==0);
+% mu1hat_resp = mu1hat;
+% mu1hat_resp(state ==0) = 1-mu1hat(state ==0);
 
-sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
+% sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
 
 % % Surprise
 % % ~~~~~~~~
@@ -96,11 +96,11 @@ sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-mu1hat_resp(r.irr) = [];
-sahat1_resp(r.irr) = [];
+mu1hat(r.irr) = [];
+sa1hat(r.irr) = [];
 sa2hat(r.irr) = [];
 mu2hat(r.irr) = [];
-logrt = be0 +be1.*mu2hat_resp + be2.*sa1hat +be3.*sa2hat +be4.*mu3hat;
+logrt = be0 +be1.*mu2hat + be2.*sa1hat +be3.*sa2hat +be4.*mu3hat;
 
 % Calculate log-probabilities for non-irregular trials
 % Note: 8*atan(1) == 2*pi (this is used to guard against

@@ -52,6 +52,7 @@ p_logRT = p(2:7); % parameters for the RT model
 %% Run sim for continuous data modality (logRTs)
 [logReactionTime, yhat_rt] = obs1_logrt_linear_binary_sim(r, infStates, p_logRT);
 
+
 %% save values for both response data modalities
 y = [pred logReactionTime];
 yhat = [yhat_pred yhat_rt];

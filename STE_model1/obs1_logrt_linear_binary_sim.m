@@ -38,6 +38,20 @@ function [y, logrt] = obs1_logrt_linear_binary_sim(r, infStates, p)
 % with this program. If not, see <https://www.gnu.org/licenses/>.
 % _________________________________________________________________________
 
+
+
+
+
+
+% I think I need to jimmy this around a bit... Some of the regressors don't
+% do anything, and I need to create a regressor for stimulus noise as this
+% is likely the biggest contributor to RT
+% 
+% Also - figure out if all the variables in tapas_logrt_linear_binary work
+% with this u_al - e.g. surprise, bernoulli variance, etc
+
+
+
 % Get parameters
 be0  = p(1);
 be1  = p(2);
@@ -56,6 +70,8 @@ n = size(infStates,1);
 u_al = r.u(:,1);
 state = u_al>0.5;
 
+u = u_al;
+
 % u_al(r.irr) = [];
 % state(r.irr) = [];
 
@@ -67,13 +83,11 @@ sa2hat = infStates(:,2,2);
 mu3hat = infStates(:,3,1);
 
 % move variables from state (contingency space) to response space
-mu2hat_resp = mu2hat;
-mu2hat_resp(state ==0) = -mu2hat(state ==0);
-
-mu1hat_resp = mu1hat;
-mu1hat_resp(state ==0) = 1-mu1hat(state ==0);
-
-sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
+% mu2hat_resp = mu2hat;
+% mu2hat_resp(state ==0) = -mu2hat(state ==0);
+% mu1hat_resp = mu1hat;
+% mu1hat_resp(state ==0) = 1-mu1hat(state ==0);
+% sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
 
 
 % Surprise
@@ -89,11 +103,12 @@ sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
 % sahat1_resp(r.irr) = [];
 % sa2hat(r.irr) = [];
 % mu3hat(r.irr) = [];
+
 logrt = be0 +be1.*mu2hat + be2.*sa1hat +be3.*sa2hat +be4.*mu3hat;
 
-% 
 % logrt = be0 + be1.*surp_shifted + be2.*sa1hat + be3.*sa2hat + ...
-%     be4.*exp(mu3hat);
+    % be4.*exp(mu3hat);
+
 
 % Initialize random number generator
 if isnan(r.c_sim.seed)
