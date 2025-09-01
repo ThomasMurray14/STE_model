@@ -51,28 +51,31 @@ eta1 = p(5*l+2);
 % Add dummy "zeroth" trial
 u = [0; r.u(:,1)];
 cue = [-1; r.u(:,2)];
+stim_noise = 0.5-abs(u-.5); % [0,1]->0, [.2,.8]->.2, [.4,.6]->.4
 
 % Number of trials (including prior)
 n = length(u);
 
 % Assume that if u has more than one column, the last contains t
-try
-    if r.c_prc.irregular_intervals
-        if size(u,2) > 1
-            t = [0; r.u(:,end)];
-        else
-            error('tapas:hgf:InputSingleColumn', 'Input matrix must contain more than one column if irregular_intervals is set to true.');
-        end
-    else
-        t = ones(n,1);
-    end
-catch
-    if size(u,2) > 1
-        t = [0; r.u(:,end)];
-    else
-        t = ones(n,1);
-    end
-end
+% try
+%     if r.c_prc.irregular_intervals
+%         if size(u,2) > 1
+%             t = [0; r.u(:,end)];
+%         else
+%             error('tapas:hgf:InputSingleColumn', 'Input matrix must contain more than one column if irregular_intervals is set to true.');
+%         end
+%     else
+%         t = ones(n,1);
+%     end
+% catch
+%     if size(u,2) > 1
+%         t = [0; r.u(:,end)];
+%     else
+%         t = ones(n,1);
+%     end
+% end
+t = ones(n,1);
+
 
 % Initialize updated quantities
 
@@ -106,7 +109,8 @@ for k = 2:1:n
         %%%%%%%%%%%%%%%%%%%%%%
         
         % 2nd level prediction
-        muhat(k,2) = mu(k-1,2) +t(k) *rho(2)*cue(k);
+        rho_trial = rho(2)*stim_noise(k);
+        muhat(k,2) = mu(k-1,2) +t(k) *rho_trial*cue(k);
         
         % 1st level
         % ~~~~~~~~~

@@ -5,7 +5,7 @@ function [y, logrt] = obs1_logrt_linear_binary_sim(r, infStates, p)
 % (Designed to be compatible with the HGF Toolbox as part of TAPAS).
 %
 % INPUT
-%   r             struct      Struct obtained from tapas_simModel.m fct
+%   r             struct      Struct obtained from tapas_simModel.m
 %   infStates     tensor      Tensor containing inferred states from the
 %                             perceptual model    
 %   p             vector      1xP vector with free param values (nat space)
@@ -51,6 +51,13 @@ function [y, logrt] = obs1_logrt_linear_binary_sim(r, infStates, p)
 % with this u_al - e.g. surprise, bernoulli variance, etc
 
 
+% mu1hat    = 1st level prediction
+% sa1hat    = inverse precision of 1st level prediction
+% mu2       = 2nd level outcome
+% sa2       = inverse precisions of 2nd level outcome
+% mu3       = 3rd level outcome
+
+
 
 % Get parameters
 be0  = p(1);
@@ -64,50 +71,44 @@ sa   = p(6);
 n = size(infStates,1);
 
 % Inputs
-% y = r.y(:,2);
-% y(r.irr) = [];
-
 u_al = r.u(:,1);
-state = u_al>0.5;
+u = u_al>0.5;
 
-u = u_al;
+stim_noise = 0.5-abs(u_al-.5); % [0,1]->0, [.2,.8]->.2, [.4,.6]->.4
 
-% u_al(r.irr) = [];
-% state(r.irr) = [];
 
 % Extract trajectories of interest from infStates
 mu1hat = infStates(:,1,1);
-mu2hat = infStates(:,2,1);
 sa1hat = infStates(:,1,2);
-sa2hat = infStates(:,2,2);
-mu3hat = infStates(:,3,1);
-
-% move variables from state (contingency space) to response space
-% mu2hat_resp = mu2hat;
-% mu2hat_resp(state ==0) = -mu2hat(state ==0);
-% mu1hat_resp = mu1hat;
-% mu1hat_resp(state ==0) = 1-mu1hat(state ==0);
-% sahat1_resp = mu1hat_resp.*(1-mu1hat_resp);
+mu2    = infStates(:,2,3);
+sa2    = infStates(:,2,4);
+% mu3    = infStates(:,3,3);
 
 
 % Surprise
 % ~~~~~~~~
-% poo = mu1hat.^u.*(1-mu1hat).^(1-u); % probability of observed outcome
-% surp = -log2(poo);
+poo = mu1hat.^u.*(1-mu1hat).^(1-u); % probability of observed outcome
+surp = -log2(poo);
 % surp_shifted = [1; surp(1:(length(surp)-1))];
+
+% Bernoulli variance (aka irreducible uncertainty, risk) 
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bernv = sa1hat;
+
+% Inferential variance (aka informational or estimation uncertainty, ambiguity)
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+inferv = tapas_sgm(mu2, 1).*(1 -tapas_sgm(mu2, 1)).*sa2; % transform down to 1st level
+
+% Phasic volatility (aka environmental or unexpected uncertainty)
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% pv = tapas_sgm(mu2, 1).*(1-tapas_sgm(mu2, 1)).*exp(mu3); % transform down to 1st level
+
 
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% 
-% mu1hat_resp(r.irr) = [];
-% sahat1_resp(r.irr) = [];
-% sa2hat(r.irr) = [];
-% mu3hat(r.irr) = [];
+% logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*pv;
+logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*stim_noise;
 
-logrt = be0 +be1.*mu2hat + be2.*sa1hat +be3.*sa2hat +be4.*mu3hat;
-
-% logrt = be0 + be1.*surp_shifted + be2.*sa1hat + be3.*sa2hat + ...
-    % be4.*exp(mu3hat);
 
 
 % Initialize random number generator
