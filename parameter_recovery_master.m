@@ -9,6 +9,7 @@ function recov = parameter_recovery_master(u, prc_model_config, obs_model_config
 %   N                   - N simulations
 %   prc_params          - cell with names of perceptual model params
 %   obs_params          - cell with names of observation model params
+%   figs                - boolean to produce figs
 
 
 % preallocate sim and est parameters
@@ -21,6 +22,7 @@ end
 
 % Main loop
 for i = 1:N
+    fprintf('\nParameter recovery iteration %i\n', i);
     sim = tapas_sampleModel(u, prc_model_config, obs_model_config);
     
     % Store simulated prc params
@@ -89,7 +91,7 @@ for i = 1:N
 end
 
 
-if figs == 1
+if figs
     for iP = 1:numel(all_params)
         figure('name', all_params{iP});  
         hold on; 

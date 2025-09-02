@@ -1,20 +1,24 @@
-function [y, logrt] = obs1_logrt_linear_binary_sim(r, infStates, p)
-% [y, logrt] = m1_logrt_linear_binary_sim(r, infStates, p)
+function [logp, yhat, res] = obs2_logrt_linear_binary(r, infStates, ptrans)
+% [logp, yhat, res] = m1_logrt_linear_binary(r, infStates, ptrans)
 %
-% Simulates logRTs with Gaussian noise.
+% Calculates the log-probability of log-reaction times y (in units of
+% log-ms) according to the linear log-RT model developed for the SPIRL
+% study based on the Lawson logRT GLM.
 % (Designed to be compatible with the HGF Toolbox as part of TAPAS).
 %
 % INPUT
-%   r             struct      Struct obtained from tapas_simModel.m
+%   r             struct      Struct obtained from tapas_fitModel.m fct
 %   infStates     tensor      Tensor containing inferred states from the
 %                             perceptual model    
-%   p             vector      1xP vector with free param values (nat space)
+%   ptrans        vector      1xP vector with free param values (est space)
 %
 %   OPTIONAL:
 %
 % OUTPUT    
-%   y             vector       Nx1 vector with simulated logRTs
-%   logrt         vector       Nx1 vector containing noise-free predictions
+%   logp          vector       1xN vector containing trialwise log
+%                              probabilities of logRTs
+%   yhat          vector       1xN vector containing noise-free predictions
+%   res           vector       1xN vector containing residuals
 %
 % _________________________________________________________________________
 % Author: Alex Hess
@@ -38,32 +42,29 @@ function [y, logrt] = obs1_logrt_linear_binary_sim(r, infStates, p)
 % with this program. If not, see <https://www.gnu.org/licenses/>.
 % _________________________________________________________________________
 
+% Transform parameters to their native space
+be0  = ptrans(1);
+be1  = ptrans(2);
+be2  = ptrans(3);
+be3  = ptrans(4);
+be4  = ptrans(5);
+sa   = exp(ptrans(6));
 
-
-
-
-% mu1hat    = 1st level prediction
-% sa1hat    = inverse precision of 1st level prediction
-% mu2       = 2nd level outcome
-% sa2       = inverse precisions of 2nd level outcome
-% mu3       = 3rd level outcome
-
-
-
-% Get parameters
-be0  = p(1);
-be1  = p(2);
-be2  = p(3);
-be3  = p(4);
-be4  = p(5);
-sa   = p(6);
-
-% Number of trials
+% Initialize returned log-probabilities, predictions,
+% and residuals as NaNs so that NaN is returned for all
+% irregualar trials
 n = size(infStates,1);
+logp = NaN(n,1);
+yhat = NaN(n,1);
+res  = NaN(n,1);
 
-% Inputs
+% Weed irregular trials out from responses and inputs
+y = r.y(:,2);
+y(r.irr) = [];
+
 u_al = r.u(:,1);
 u = u_al>0.5;
+
 
 stim_noise = 0.5-abs(u_al-.5); % [0,1]->0, [.2,.8]->.2, [.4,.6]->.4
 
@@ -102,14 +103,12 @@ logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*stim_noise;
 
 
 
-% Initialize random number generator
-if isnan(r.c_sim.seed)
-    rng('shuffle');
-else
-    rng(r.c_sim.seed);
-end
+% Calculate log-probabilities for non-irregular trials
+% Note: 8*atan(1) == 2*pi (this is used to guard against
+% errors resulting from having used pi as a variable).
+reg = ~ismember(1:n,r.irr);
+logp(reg) = -1/2.*log(8*atan(1).*sa) -(y-logrt).^2./(2.*sa);
+yhat(reg) = logrt;
+res(reg) = y-logrt;
 
-% Simulate
-y = logrt+sqrt(sa)*randn(n, 1);
-
-end
+return;
