@@ -59,7 +59,7 @@ prc_model_config.rhomu(2)   = 0; % bias towards sad - does work in terms of # re
 prc_model_config.rhosa(2)   = 4;
 
 prc_model_config.logalmu    = log(0.1); % perceptual uncertainty
-prc_model_config.logalsa    = 4;
+prc_model_config.logalsa    = 2;
 
 prc_model_config = tapas_align_priors(prc_model_config);
 
@@ -67,19 +67,19 @@ obs_model_config.logzemu = log(1);
 obs_model_config.logzesa = 2;
 
 obs_model_config.beta0mu = 6.5000;
-obs_model_config.beta0sa = 2;
+obs_model_config.beta0sa = 4;
 
 obs_model_config.beta1mu = 0;
-obs_model_config.beta1sa = 2;
+obs_model_config.beta1sa = 4;
 
-obs_model_config.beta2mu = 10;
-obs_model_config.beta2sa = 2;
+obs_model_config.beta2mu = 0;
+obs_model_config.beta2sa = 4;
 
 obs_model_config.beta3mu = 0;
-obs_model_config.beta3sa = 2;
+obs_model_config.beta3sa = 4;
 
 obs_model_config.beta4mu = 0;
-obs_model_config.beta4sa = 2;
+obs_model_config.beta4sa = 4;
 
 obs_model_config.logsasa = log(.1);
 obs_model_config.logsasa = 2;
@@ -168,4 +168,14 @@ save('model1_recovery.mat', 'recov');
 
 % recovery looks good for rho2 and omega2. For alpha, some huge outliers,
 % but looks good (in log space) when they are removed
+
+
+%% Fit actual data
+
+model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config);
+save('model1_fit.mat', 'model_fits');
+
+
+
+
 

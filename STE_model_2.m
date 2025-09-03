@@ -5,6 +5,11 @@
 % 
 % TODO
 %   parameters/config for obs2
+% 
+
+#####
+%  SCRIPTS ARE NOT FINISHED
+#####
 
 
 %%
