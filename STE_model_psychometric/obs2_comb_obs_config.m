@@ -43,15 +43,18 @@ c = struct;
 c.predorpost = 2; % Posteriors
 
 % Model name
-c.model = 'obs1_comb_obs';
+c.model = 'obs2_comb_obs';
 
 
 %% Sufficient statistics of Gaussian parameter priors
 %-----------------------------------
-% Model for binary predictions
-% zeta - inv decision noise
-c.logzemu = log(48);
-c.logzesa = 1;
+% Model for binary predictions (psychometric)
+% beta0 - baseline PSE
+c.obsbeta0_mu = log(48);
+c.obsbeta0_sa = 1;
+
+% beta1 - 
+
 
 %-----------------------------------
 % Model for Reaction Time fit
