@@ -31,8 +31,6 @@ for iP = 1:numel(all_params)
     recov.(all_params{iP}).est = nan(N, 1);
 end
 recov.LME = nan(N, 1); % store LME
-recov.AIC = nan(N, 1); % store AIC
-recov.BIC = nan(N, 1); % store BIC
 
 % Main loop
 for i = 1:N
@@ -77,10 +75,6 @@ for i = 1:N
 
             % get estimated parameters
             if ~isinf(est.optim.LME)
-                % store fit metrics
-                recov.LME(i) = est.optim.LME;
-                recov.AIC(i) = est.optim.AIC;
-                recov.BIC(i) = est.optim.BIC;
                 
                 % Store estimated prc params
                 for iP = 1:numel(prc_params)
