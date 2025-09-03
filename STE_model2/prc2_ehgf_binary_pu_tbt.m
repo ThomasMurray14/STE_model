@@ -123,9 +123,8 @@ for k = 2:1:n
 
         % Updates
         pi(k,1) = Inf;
-        %mu(k,1) = u(k);
-        eta1 = rho + (1/al);
-        eta0 = rho - (1/al);
+        eta1 = rho + al;
+        eta0 = rho - al;
         % und1 = exp(-(u(k) -eta1)^2/(2*al));
         % und0 = exp(-(u(k) -eta0)^2/(2*al));
         und1 = exp(-(u(k) -eta1)^2/0.01);

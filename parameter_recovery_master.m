@@ -6,8 +6,8 @@ function recov = parameter_recovery_master(u,...
     prc_params,...
     prc_param_idx,...
     obs_params,...
-    obs_param_idx,...
-    figs)
+    obs_param_idx)
+
 % master function to perform parameter recovery
 % 
 % input:
@@ -20,7 +20,7 @@ function recov = parameter_recovery_master(u,...
 %   prc_param_idx       - array with idxs of params in prc_params
 %   obs_params          - cell with names of observation model params
 %   obs_param_idx       - array with idxs of params in obs_params
-%   figs                - boolean to produce figs
+
 
 
 
@@ -113,18 +113,6 @@ for i = 1:N
     end
 end
 
-
-if figs
-    for iP = 1:numel(all_params)
-        figure('name', all_params{iP});  
-        hold on; 
-        scatter(recov.(all_params{iP}).sim, recov.(all_params{iP}).est);
-        refline(1,0); 
-        xlabel('Simulated');
-        ylabel('Estimated');
-        title(all_params{iP})
-    end
-end
 
 
 end

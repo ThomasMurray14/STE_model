@@ -65,15 +65,15 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.logitrhomu   = tapas_logit(0.5, 1); % Discrimination threshold
+prc_model_config.logitrhomu   = tapas_logit(0.9, 1); % Discrimination threshold
 prc_model_config.logitrhosa   = 2;
 
-prc_model_config.logalmu    = log(0.1); % perceptual uncertainty
+prc_model_config.logalmu    = log(1); % perceptual uncertainty
 prc_model_config.logalsa    = 2;
 
 prc_model_config = tapas_align_priors(prc_model_config);
 
-obs_model_config.logzemu = log(1);
+obs_model_config.logzemu = log(.1);
 obs_model_config.logzesa = 2;
 
 obs_model_config.beta0mu = 6.5000;
@@ -109,7 +109,7 @@ obs_params(7) = exp(obs_params(7));
 sim = tapas_simModel(u,...
     'prc2_ehgf_binary_pu_tbt',...
     prc_params,...
-    'obs1_comb_obs',...
+    'obs2_comb_obs',...
     obs_params,...
     123456789);
 
@@ -118,7 +118,7 @@ sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & s
 N_sad = sum(sim_sad);
 
 
-visualise_psychometric(u, sub_data, 'prc1_ehgf_binary_pu_tbt', prc_params, 'obs1_comb_obs', obs_params, 20)
+visualise_psychometric(u, sub_data, 'prc2_ehgf_binary_pu_tbt', prc_params, 'obs2_comb_obs', obs_params, 20)
 
 
 
@@ -165,36 +165,33 @@ est = tapas_fitModel(...
 % legend()
 
 %% Full parameter recovery
-
-% set N iterations
-N = 200;
-
-% Parameters to recover
-prc_param_names = {'om2', 'rho2', 'al'};
-prc_param_idx   = [13, 8, 15];
-obs_param_names = {'ze', 'beta0', 'beta1', 'beta2', 'beta3', 'beta4', 'sa'};
-obs_param_idx   = [1, 2, 3, 4, 5, 6, 7];
-
-recov = parameter_recovery_master(u,...
-    prc_model_config,...
-    obs_model_config,...
-    optim_config,...
-    N,...
-    prc_param_names,...
-    prc_param_idx,...
-    obs_param_names,...
-    obs_param_idx,...
-    true);
-save('model1_recovery.mat', 'recov');
-
-% recovery looks good for rho2 and omega2. For alpha, some huge outliers,
-% but looks good (in log space) when they are removed
+% 
+% % set N iterations
+% N = 200;
+% 
+% % Parameters to recover
+% prc_param_names = {'om2', 'rho2', 'al'};
+% prc_param_idx   = [13, 8, 15];
+% obs_param_names = {'ze', 'beta0', 'beta1', 'beta2', 'beta3', 'beta4', 'sa'};
+% obs_param_idx   = [1, 2, 3, 4, 5, 6, 7];
+% 
+% recov = parameter_recovery_master(u,...
+%     prc_model_config,...
+%     obs_model_config,...
+%     optim_config,...
+%     N,...
+%     prc_param_names,...
+%     prc_param_idx,...
+%     obs_param_names,...
+%     obs_param_idx,...
+%     true);
+% save('model2_recovery.mat', 'recov');
 
 
 %% Fit actual data
 
 % model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config);
-% save('model1_fit.mat', 'model_fits');
+% save('model2_fit.mat', 'model_fits');
 
 
 

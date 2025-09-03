@@ -176,9 +176,11 @@ recov = parameter_recovery_master(u,...
     obs_param_idx,...
     true);
 save('model1_recovery.mat', 'recov');
+recovery_figures(recov);
 
 % recovery looks good for rho2 and omega2. For alpha, some huge outliers,
 % but looks good (in log space) when they are removed
+% Also good recovery for response model params
 
 
 %% Fit actual data
