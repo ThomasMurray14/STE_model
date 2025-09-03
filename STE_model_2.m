@@ -65,15 +65,15 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.logitrhomu   = tapas_logit(0.9, 1); % Discrimination threshold
+prc_model_config.logitrhomu   = tapas_logit(0.2, 1); % Discrimination threshold - Doesn't work at the moment
 prc_model_config.logitrhosa   = 2;
 
-prc_model_config.logalmu    = log(1); % perceptual uncertainty
+prc_model_config.logalmu    = log(10); % perceptual uncertainty
 prc_model_config.logalsa    = 2;
 
 prc_model_config = tapas_align_priors(prc_model_config);
 
-obs_model_config.logzemu = log(.1);
+obs_model_config.logzemu = log(.5);
 obs_model_config.logzesa = 2;
 
 obs_model_config.beta0mu = 6.5000;

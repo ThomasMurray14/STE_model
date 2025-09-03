@@ -102,10 +102,10 @@ c.priorsas = [
     ];
 
 % Model filehandle
-c.obs_fun = @obs1_comb_obs;
+c.obs_fun = @obs2_comb_obs;
 
 % Handle to function that transforms perceptual parameters to their native
 % space from the space they are estimated in
-c.transp_obs_fun = @obs1_comb_obs_transp;
+c.transp_obs_fun = @obs2_comb_obs_transp;
 
 return;

@@ -123,8 +123,8 @@ for k = 2:1:n
 
         % Updates
         pi(k,1) = Inf;
-        eta1 = rho + al;
-        eta0 = rho - al;
+        eta1 = rho + (1/al);
+        eta0 = rho - (1/al);
         % und1 = exp(-(u(k) -eta1)^2/(2*al));
         % und0 = exp(-(u(k) -eta0)^2/(2*al));
         und1 = exp(-(u(k) -eta1)^2/0.01);
@@ -153,7 +153,7 @@ for k = 2:1:n
             % ~~~~~~~~~~~~~~~~~~~~~~~~~~
             for j = 3:l-1
                 % Prediction
-                muhat(k,j) = mu(k-1,j) +t(k) *rho(j);
+                muhat(k,j) = mu(k-1,j);% +t(k) *rho(j);
                 
                 % Precision of prediction
                 pihat(k,j) = 1/(1/pi(k-1,j) +t(k) *exp(ka(j) *mu(k-1,j+1) +om(j)));
