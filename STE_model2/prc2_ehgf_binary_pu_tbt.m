@@ -123,12 +123,14 @@ for k = 2:1:n
 
         % Updates
         pi(k,1) = Inf;
-        eta1 = rho + (1/al);
-        eta0 = rho - (1/al);
-        % und1 = exp(-(u(k) -eta1)^2/(2*al));
-        % und0 = exp(-(u(k) -eta0)^2/(2*al));
-        und1 = exp(-(u(k) -eta1)^2/0.01);
-        und0 = exp(-(u(k) -eta0)^2/0.01);
+
+        und1 = exp(-(u(k) -eta1)^2/(2*al));
+        und0 = exp(-(u(k) -eta0)^2/(2*al));
+        
+        % eta1 = rho + (1/al);
+        % eta0 = rho - (1/al);
+        % und1 = exp(-(u(k) -eta1)^2/0.01);
+        % und0 = exp(-(u(k) -eta0)^2/0.01);
         mu(k,1) = muhat(k,1) *und1 /(muhat(k,1) *und1 + (1 -muhat(k,1)) *und0);
 
         % Prediction error
