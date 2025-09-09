@@ -5,8 +5,10 @@ function recov = parameter_recovery_master(u,...
     N,...
     prc_params,...
     prc_param_idx,...
+    prc_param_space,...
     obs_params,...
-    obs_param_idx)
+    obs_param_idx,...
+    obs_param_space)
 
 % master function to perform parameter recovery
 % 
@@ -43,25 +45,14 @@ for i = 1:N
     for iP = 1:numel(prc_params)
         param_name=prc_params{iP};
         recov.(param_name).sim(i) = sim.p_prc.p(prc_param_idx(iP));
-
-        % param_idx=str2double(param_name(end)); % clunky method for dealing with some parameters ending in idx (e.g. om2)
-        % if isnan(param_idx)
-            % recov.(param_name).sim(i) = sim.p_prc.(param_name);
-        % else
-            % recov.(param_name).sim(i) = sim.p_prc.(param_name(1:end-1))(param_idx);
-        % end
+        recov.(param_name).space = prc_param_space{iP};
     end
     
     % store simulated obs params
     for iP = 1:numel(obs_params)
         param_name=obs_params{iP};
         recov.(param_name).sim(i) = sim.p_obs.p(obs_param_idx(iP));
-        % param_idx=str2double(param_name(end)); % clunky method for dealing with some parameters ending in idx (e.g. om2)
-        % if isnan(param_idx)
-            % recov.(param_name).sim(i) = sim.p_obs.(param_name);
-        % else
-            % recov.(param_name).sim(i) = sim.p_obs.(param_name(1:end-1))(param_idx);
-        % end
+        recov.(param_name).space = obs_param_space{iP};
     end
 
 
@@ -86,24 +77,12 @@ for i = 1:N
                 for iP = 1:numel(prc_params)
                     param_name=prc_params{iP};
                     recov.(param_name).est(i) = est.p_prc.p(prc_param_idx(iP));
-                    % param_idx=str2double(param_name(end)); % clunky method for dealing with some parameters ending in idx (e.g. om2)
-                    % if isnan(param_idx)
-                        % recov.(param_name).est(i) = est.p_prc.(param_name);
-                    % else
-                        % recov.(param_name).est(i) = est.p_prc.(param_name(1:end-1))(param_idx);
-                    % end
                 end
                 
                 % store simulated obs params
                 for iP = 1:numel(obs_params)
                     param_name=obs_params{iP};
                     recov.(param_name).est(i) = est.p_obs.p(obs_param_idx(iP));
-                    % param_idx=str2double(param_name(end)); % clunky method for dealing with some parameters ending in idx (e.g. om2)
-                    % if isnan(param_idx)
-                        % recov.(param_name).est(i) = est.p_obs.(param_name);
-                    % else
-                        % recov.(param_name).est(i) = est.p_obs.(param_name(1:end-1))(param_idx);
-                    % end
                 end
 
             end

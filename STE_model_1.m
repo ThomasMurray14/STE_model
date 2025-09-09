@@ -55,7 +55,7 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.rhomu(2)   = -5; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
+prc_model_config.rhomu(2)   = 0; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
 prc_model_config.rhosa(2)   = 4;
 
 prc_model_config.logalmu    = log(0.1); % perceptual uncertainty
@@ -162,8 +162,10 @@ N = 200;
 % Parameters to recover
 prc_param_names = {'om2', 'rho2', 'al'};
 prc_param_idx   = [13, 8, 15];
+prc_param_space = {'native', 'native', 'log'};
 obs_param_names = {'ze', 'beta0', 'beta1', 'beta2', 'beta3', 'beta4', 'sa'};
 obs_param_idx   = [1, 2, 3, 4, 5, 6, 7];
+obs_param_space = {'log', 'native', 'native', 'native', 'native', 'native', 'log'};
 
 recov = parameter_recovery_master(u,...
     prc_model_config,...
@@ -172,9 +174,10 @@ recov = parameter_recovery_master(u,...
     N,...
     prc_param_names,...
     prc_param_idx,...
+    prc_param_space,...
     obs_param_names,...
     obs_param_idx,...
-    true);
+    obs_param_space);
 save('model1_recovery.mat', 'recov');
 recovery_figures(recov);
 
@@ -185,8 +188,8 @@ recovery_figures(recov);
 
 %% Fit actual data
 
-% model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config);
-% save('model1_fit.mat', 'model_fits');
+model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config);
+save('model1_fit.mat', 'model_fits');
 
 
 
