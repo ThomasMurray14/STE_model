@@ -1,28 +1,15 @@
-%% MODEL 1
+%% MODEL 2
 % Perceptual model 
-%   = [prc1] 2 level eHGF Nace remix (bias on prediction)
+%   = [prc2] 2 level eHGF Nace remix (bias on perception)
 % Response model 
 %   = [obs1] combined unitsq_sgm and logRT
-% 
-% 
-% TODO
-% 
-% - Try including confidence
-% 
-% Notes:
-% 
-% At the moment, rho(2) is getting multiplied by stim_noise - expectation
-% that biases will be greater for ambiguous expressions (and reduced for
-% clear expressions)
-% 
-% I think actually I should change this back (use rho bias on all)
 
 
 
 %%
 clear;
 close all;
-addpath('prc1');
+addpath('prc2');
 addpath('obs1');
 
 %% 
@@ -61,7 +48,7 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.rhomu(2)   = 0; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
+prc_model_config.rhomu(2)   = 0; % bias towards sad
 prc_model_config.rhosa(2)   = 4;
 
 prc_model_config.logalmu    = log(.1); % perceptual uncertainty
@@ -103,7 +90,7 @@ obs_params(1) = exp(obs_params(1));
 obs_params(7) = exp(obs_params(7));
 % obs_params(8) = 3;%exp(obs_params(8));
 sim = tapas_simModel(u,...
-    'prc1_ehgf_binary_pu_tbt',...
+    'prc2_ehgf_binary_pu_tbt',...
     prc_params,...
     'obs1_comb_obs',...
     obs_params,...
@@ -111,15 +98,15 @@ sim = tapas_simModel(u,...
 
 
 sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
-N_sad = sum(sim_sad)
+N_sad = sum(sim_sad);
 
 
-visualise_psychometric(u, sub_data, 'prc1_ehgf_binary_pu_tbt', prc_params, 'obs1_comb_obs', obs_params, 20)
+visualise_psychometric(u, sub_data, 'prc2_ehgf_binary_pu_tbt', prc_params, 'obs1_comb_obs', obs_params, 20)
 
 
 
 %% Plot trajectory
-prc1_ehgf_binary_tbt_plotTraj(sim);
+prc2_ehgf_binary_tbt_plotTraj(sim);
 
 
 %% recover parameters
@@ -132,33 +119,6 @@ est = tapas_fitModel(...
     optim_config);
 
 
-%% Simulate psychometric functions
-
-% figure('name', 'simulated psychometric'); hold on;
-% prc_params_sim = prc_params;
-% obs_params_sim = obs_params;
-% for rho = [-2, 0, 2]
-% 
-%     prc_params_sim(8) = rho;
-% 
-%     sim = tapas_simModel(u,...
-%         'prc1_ehgf_binary_pu_tbt',...
-%         prc_params_sim,...
-%         'obs1_comb_obs',...
-%         obs_params_sim,...
-%         123456789);
-% 
-% 
-%     % Visualise Psychometric
-%     sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
-%     sim_psychometric = arrayfun(@(x) mean(sim_sad(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
-%     plot(0:20:100, sim_psychometric, 'linewidth', 3, 'DisplayName', sprintf('\\rho = %1.1f', rho));
-% end
-% 
-% set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
-% ylabel('p(Sad)')
-% xlabel('%Sad')
-% legend()
 
 %% Full parameter recovery
 
@@ -184,18 +144,14 @@ recov = parameter_recovery_master(u,...
     obs_param_names,...
     obs_param_idx,...
     obs_param_space);
-save('model1_recovery.mat', 'recov');
+save('model2_recovery.mat', 'recov');
 recovery_figures(recov);
-
-% recovery looks good for rho2 and omega2. For alpha, some huge outliers,
-% but looks good (in log space) when they are removed
-% Also good recovery for response model params
 
 
 %% Fit actual data
 
 model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config);
-save('model1_fit.mat', 'model_fits');
+save('model2_fit.mat', 'model_fits');
 
 
 

@@ -127,6 +127,7 @@ for k = 2:1:n
         und0 = exp(-(u(k) -eta0)^2/(2*al));
         mu(k,1) = muhat(k,1) *und1 /(muhat(k,1) *und1 + (1 -muhat(k,1)) *und0);
 
+
         % Prediction error
         da(k,1) = mu(k,1) -muhat(k,1);
 

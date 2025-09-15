@@ -1,4 +1,4 @@
-function tapas_ehgf_binary_plotTraj(r)
+function prc2_ehgf_binary_tbt_plotTraj(r)
 % Plots the estimated or generated trajectories for the binary HGF perceptual model
 % Usage example:  est = tapas_fitModel(responses, inputs); tapas_hgf_binary_plotTraj(est);
 %
@@ -24,7 +24,7 @@ figure(...
     'Name', 'HGF trajectories');
 
 % Time axis
-if size(r.u,2) > 1
+if size(r.u,2) > 2
     t = r.u(:,end)';
 else
     t = ones(1,size(r.u,1));
@@ -73,7 +73,7 @@ plot(ts, [tapas_sgm(r.p_prc.mu_0(2), 1); tapas_sgm(r.traj.mu(:,2), 1)], 'r', 'Li
 hold all;
 plot(0, tapas_sgm(r.p_prc.mu_0(2), 1), 'or', 'LineWidth', 2); % prior
 plot(ts(2:end), r.u(:,1), '.', 'Color', [0 0.6 0]); % inputs
-plot(ts(2:end), r.traj.wt(:,1), 'k') % implied learning rate 
+% plot(ts(2:end), r.traj.wt(:,1), 'k') % implied learning rate 
 if (ploty == true) && ~isempty(find(strcmp(fieldnames(r),'y'))) && ~isempty(r.y)
     if ~isempty(find(strcmp(fieldnames(r),'c_sim'))) && strcmp(r.c_sim.obs_model,'tapas_beta_obs')
         y = r.y(:,1);

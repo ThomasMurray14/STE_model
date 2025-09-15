@@ -1,6 +1,6 @@
-function [pvec, pstruct] = tapas_ehgf_binary_transp(r, ptrans)
+function [pvec, pstruct] = prc2_ehgf_binary_pu_tbt_transp(r, ptrans)
 % --------------------------------------------------------------------------------------------------
-% Copyright (C) 2012-2020 Christoph Mathys, TNU, UZH & ETHZ
+% Copyright (C) 2012-2015 Christoph Mathys, TNU, UZH & ETHZ
 %
 % This file is part of the HGF toolbox, which is released under the terms of the GNU General Public
 % Licence (GPL), version 3. You can redistribute it and/or modify it under the terms of the GPL
@@ -23,5 +23,11 @@ pvec(3*l+1:4*l-1) = exp(ptrans(3*l+1:4*l-1));              % ka
 pstruct.ka        = pvec(3*l+1:4*l-1);
 pvec(4*l:5*l-1)   = ptrans(4*l:5*l-1);                     % om
 pstruct.om        = pvec(4*l:5*l-1);
+pvec(5*l)         = exp(ptrans(5*l));                      % al
+pstruct.al        = pvec(5*l);
+pvec(5*l+1)       = ptrans(5*l+1);                         % eta0
+pstruct.eta0      = pvec(5*l+1);
+pvec(5*l+2)       = ptrans(5*l+2);                         % eta1
+pstruct.eta1      = pvec(5*l+2);
 
-end
+return;

@@ -1,4 +1,4 @@
-function [traj, infStates] = tapas_ehgf_binary(r, p, varargin)
+function [traj, infStates] = prc2_ehgf_binary_pu_tbt(r, p, varargin)
 % Calculates the trajectories of the agent's representations under the HGF
 %
 % This function can be called in two ways:
@@ -23,7 +23,7 @@ function [traj, infStates] = tapas_ehgf_binary(r, p, varargin)
 
 % Transform paramaters back to their native space if needed
 if ~isempty(varargin) && strcmp(varargin{1},'trans')
-    p = tapas_ehgf_binary_transp(r, p);
+    p = prc1_ehgf_binary_pu_tbt_transp(r, p);
 end
 
 % Number of levels
@@ -44,31 +44,38 @@ rho  = p(2*l+1:3*l);
 ka   = p(3*l+1:4*l-1);
 om   = p(4*l:5*l-2);
 th   = exp(p(5*l-1));
+al   = p(5*l);
+eta0 = p(5*l+1);
+eta1 = p(5*l+2);
 
 % Add dummy "zeroth" trial
 u = [0; r.u(:,1)];
+cue = [-1; r.u(:,2)];
+stim_noise = 0.5-abs(u-.5); % [0,1]->0, [.2,.8]->.2, [.4,.6]->.4
 
 % Number of trials (including prior)
 n = length(u);
 
 % Assume that if u has more than one column, the last contains t
-try
-    if r.c_prc.irregular_intervals
-        if size(u,2) > 1
-            t = [0; r.u(:,end)];
-        else
-            error('tapas:hgf:InputSingleColumn', 'Input matrix must contain more than one column if irregular_intervals is set to true.');
-        end
-    else
-        t = ones(n,1);
-    end
-catch
-    if size(u,2) > 1
-        t = [0; r.u(:,end)];
-    else
-        t = ones(n,1);
-    end
-end
+% try
+%     if r.c_prc.irregular_intervals
+%         if size(u,2) > 1
+%             t = [0; r.u(:,end)];
+%         else
+%             error('tapas:hgf:InputSingleColumn', 'Input matrix must contain more than one column if irregular_intervals is set to true.');
+%         end
+%     else
+%         t = ones(n,1);
+%     end
+% catch
+%     if size(u,2) > 1
+%         t = [0; r.u(:,end)];
+%     else
+%         t = ones(n,1);
+%     end
+% end
+t = ones(n,1);
+
 
 % Initialize updated quantities
 
@@ -102,23 +109,34 @@ for k = 2:1:n
         %%%%%%%%%%%%%%%%%%%%%%
         
         % 2nd level prediction
-        muhat(k,2) = mu(k-1,2) +t(k) *rho(2);
+        %rho_trial = rho(2)*stim_noise(k);
+        muhat(k,2) = mu(k-1,2);% +t(k) *rho_trial*cue(k);
         
         % 1st level
         % ~~~~~~~~~
         % Prediction
         muhat(k,1) = tapas_sgm(ka(1) *muhat(k,2), 1);
-        % Ensure numerical stability by avoiding extremes
-        muhat(k,1) = max(muhat(k,1), 0.001);
-        muhat(k,1) = min(muhat(k,1), 0.999);
         
         % Precision of prediction
         pihat(k,1) = 1/(muhat(k,1)*(1 -muhat(k,1)));
 
         % Updates
         pi(k,1) = Inf;
-        mu(k,1) = u(k);
+        %mu(k,1) = u(k);
+        und1 = exp(-(u(k) -eta1)^2/(2*al));
+        und0 = exp(-(u(k) -eta0)^2/(2*al));
+        mu(k,1) = muhat(k,1) *und1 /(muhat(k,1) *und1 + (1 -muhat(k,1)) *und0);
 
+        % Rho bias
+        if mu(k,1) < eps % crashes if mu = 1 or 0
+            mu(k,1) = eps;
+        elseif mu(k,1) > (1-eps)
+            mu(k,1) = 1-eps;
+        end
+        mu_temp = tapas_logit(mu(k,1), 1);
+        mu_temp = mu_temp + (rho(2)*cue(k));
+        mu(k,1) = tapas_sgm(mu_temp, 1);
+        
         % Prediction error
         da(k,1) = mu(k,1) -muhat(k,1);
 

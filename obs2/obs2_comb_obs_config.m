@@ -48,13 +48,14 @@ c.model = 'obs2_comb_obs';
 
 %% Sufficient statistics of Gaussian parameter priors
 %-----------------------------------
-% Model for binary predictions (psychometric)
-% beta0 - baseline PSE
-c.obsbeta0_mu = log(48);
-c.obsbeta0_sa = 1;
+% Model for binary predictions
+% zeta0 - inv decision noise
+c.logzeta0mu = log(48);
+c.logzeta0sa = 1;
 
-% beta1 - 
-
+% zeta1 - response bias
+c.zeta1mu = 0;
+c.zeta1sa = 2;
 
 %-----------------------------------
 % Model for Reaction Time fit
@@ -85,7 +86,8 @@ c.logsasa = 2;
 
 %% Gather prior settings in vectors
 c.priormus = [
-    c.logzemu,...
+    c.logzeta0mu,...
+    c.logzeta1mu,...
     c.beta0mu, ...
     c.beta1mu, ...
     c.beta2mu, ...
@@ -95,7 +97,8 @@ c.priormus = [
          ];
 
 c.priorsas = [
-    c.logzesa,...
+    c.logzeta0sa,...
+    c.logzeta1sa,...
     c.beta0sa, ...
     c.beta1sa, ...
     c.beta2sa, ...
@@ -105,10 +108,10 @@ c.priorsas = [
     ];
 
 % Model filehandle
-c.obs_fun = @obs1_comb_obs;
+c.obs_fun = @obs2_comb_obs;
 
 % Handle to function that transforms perceptual parameters to their native
 % space from the space they are estimated in
-c.transp_obs_fun = @obs1_comb_obs_transp;
+c.transp_obs_fun = @obs2_comb_obs_transp;
 
 return;
