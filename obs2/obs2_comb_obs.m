@@ -43,15 +43,15 @@ function [logp, yhat, res, logp_split] = obs2_comb_obs(r, infStates, ptrans)
 
 
 %% Separate parameters
-ptrans_sgm = ptrans(1);
-ptrans_logRT = ptrans(2:7);
+ptrans_sgm = ptrans(1:2); % parameters for the sigmoid model
+ptrans_logRT = ptrans(3:8); % parameters for the RT model
 
 
 %% binary part of the response model
 
 % compute log likelihood (binary responses)
 [logp_binary, yhat_binary, res_binary] = ...
-    obs1_unitsq_sgm_tbt(r, infStates, ptrans_sgm);
+    obs2_unitsq_sgm_tbt(r, infStates, ptrans_sgm);
 
 %% continuous part of the response model
 
@@ -62,7 +62,7 @@ ptrans_logRT = ptrans(2:7);
 
 % Compute the log likelihood (logRTs)
 [logp_reactionTime, yhat_reactionTime, res_reactionTime] = ...
-    obs1_logrt_linear_binary(r, infStates, ptrans_logRT);
+    obs2_logrt_linear_binary(r, infStates, ptrans_logRT);
 
 
 %% confidence part of the response model

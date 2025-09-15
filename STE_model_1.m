@@ -4,18 +4,7 @@
 % Response model 
 %   = [obs1] combined unitsq_sgm and logRT
 % 
-% 
-% TODO
-% 
-% - Try including confidence
-% 
-% Notes:
-% 
-% At the moment, rho(2) is getting multiplied by stim_noise - expectation
-% that biases will be greater for ambiguous expressions (and reduced for
-% clear expressions)
-% 
-% I think actually I should change this back (use rho bias on all)
+
 
 
 

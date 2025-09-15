@@ -34,6 +34,18 @@ zeta1 = p(2);
 
 
 
+x_state(x_state == 0) = eps;
+x_state(x_state == 1) = 1-eps;
+x_state_temp = tapas_logit(x_state, 1);
+x_state_temp = x_state_temp + (zeta1*r.u(:,2)); % add bias
+x_state = tapas_sgm(x_state_temp, 1);
+
+
+
+
+
+
+
 % Apply the unit-square sigmoid to the inferred states
 prob = x_state.^zeta0./(x_state.^zeta0+(1-x_state).^zeta0);
 

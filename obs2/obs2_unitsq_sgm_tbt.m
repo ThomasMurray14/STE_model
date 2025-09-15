@@ -31,6 +31,14 @@ res  = NaN(n,1);
 % Weed irregular trials out from inferred states and responses
 x_state = infStates(:,1,pop);
 
+% add bias here
+x_state(x_state == 0) = eps;
+x_state(x_state == 1) = 1-eps;
+x_state_temp = tapas_logit(x_state, 1);
+x_state_temp = x_state_temp + (zeta1*r.u(:,2)); % add bias
+x_state = tapas_sgm(x_state_temp, 1);
+
+
 x_state(r.irr) = [];
 y = r.y(:,1);
 y(r.irr) = [];

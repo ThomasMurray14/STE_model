@@ -47,10 +47,10 @@ p_logRT = p(3:8); % parameters for the RT model
 
 
 %% Run sim for binary predictions
-[pred, yhat_pred] = obs1_unitsq_sgm_tbt_sim(r, infStates, p_sgm);
+[pred, yhat_pred] = obs2_unitsq_sgm_tbt_sim(r, infStates, p_sgm);
 
 %% Run sim for continuous data modality (logRTs)
-[logReactionTime, yhat_rt] = obs1_logrt_linear_binary_sim(r, infStates, p_logRT);
+[logReactionTime, yhat_rt] = obs2_logrt_linear_binary_sim(r, infStates, p_logRT);
 
 
 %% save values for both response data modalities

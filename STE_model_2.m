@@ -39,7 +39,7 @@ y = [sub_data.resp_state, sub_data.logRT];%, sub_data.Confidence_idx];
 
 
 %% Get configuration structures
-prc_model_config = prc1_ehgf_binary_pu_tbt_config(); % perceptual model
+prc_model_config = prc2_ehgf_binary_pu_tbt_config(); % perceptual model
 obs_model_config = obs1_comb_obs_config(); % response model
 optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
 optim_config.nRandInit = 5;

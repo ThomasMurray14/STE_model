@@ -44,10 +44,10 @@ pvec = ptrans;
 
 
 
-pvec(1)     = exp(ptrans(1));    % ze (decision temperature (binary obs model))
+pvec(1)     = exp(ptrans(1));    % zeta0 (decision temperature (binary obs model))
 pstruct.zeta0  = pvec(1);
 
-pvec(2)     = ptrans(2);    % ze (decision temperature (binary obs model))
+pvec(2)     = ptrans(2);         % zeta1 (response bias)
 pstruct.zeta1  = pvec(2);
 
 pvec(3)     = ptrans(3);         % be0
