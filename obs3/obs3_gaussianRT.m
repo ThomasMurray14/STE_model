@@ -27,8 +27,6 @@ gamma = exp(ptrans(3));
 lambda = exp(ptrans(4));
 sigma1 = exp(ptrans(5));
 
-
-
 % gaussian function
 G = @(x,mu,sigma0,gamma,lambda)gamma+(lambda*exp(-((x-mu)^2)/(2*(sigma0^2))));
 
@@ -38,6 +36,9 @@ u = r.u;
 % responses
 y = r.y(:,2);
 
+% n
+n = numel(u);
+
 % probabilities
 yhat=nan(size(u));
 logp=nan(size(u));
@@ -45,7 +46,7 @@ res =nan(size(u));
 
 % Predict logRT
 logrt=nan(size(u));
-for i = 1:numel(u)
+for i = 1:n
     logrt(i) = G(u(i), mu, sigma0, gamma, lambda);
 end
 

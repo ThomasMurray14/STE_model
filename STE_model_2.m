@@ -83,7 +83,7 @@ obs_model_config = tapas_align_priors(obs_model_config);
 
 r_temp = [];
 r_temp.c_prc.n_levels = 3;
-prc_params = prc1_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
+prc_params = prc2_ehgf_binary_pu_tbt_transp(r_temp, prc_model_config.priormus);
 
 obs_params = obs_model_config.priormus;
 obs_params(1) = exp(obs_params(1));

@@ -1,10 +1,6 @@
 % model 4 (no learning)
 
 
-% I think it's working, but for some reason there is no noise in the
-% psychometric part
-
-
 %%
 clear;
 close all;
@@ -31,11 +27,18 @@ optim_config.nRandInit = 5;
 
 
 %% Set parameters and priors
+
+% fix prc params
+prc_model_config.ommu(2) = -3;
+prc_model_config.ommu(3) = -3;
+prc_model_config.omsa(2) = 0;
+prc_model_config.omsa(2) = 0;
+
 % Obs model only
 obs_model_config.logitalphamu = tapas_logit(.5, 1);
 obs_model_config.logitalphasa = 4;
 
-obs_model_config.logbetamu = log(10);
+obs_model_config.logbetamu = log(15);
 obs_model_config.logbetasa = 4;
 
 obs_model_config.logitgamma0mu = tapas_logit(.0001, 1);
@@ -97,7 +100,7 @@ y_RT = squeeze(all_y(:,2,:));
 figure('name', 'simulated response distribution'); hold on;
 all_resp_dists = zeros(N, 6);
 for i = 1:N
-    sim_resp_dist = arrayfun(@(x) mean(y_resp(sub_data.Outcome_p_sad==x, 1)), 0:20:100);
+    sim_resp_dist = arrayfun(@(x) mean(y_resp(sub_data.Outcome_p_sad==x, i)), 0:20:100);
     all_resp_dists(i, :) = sim_resp_dist;
     plot(0:20:100, sim_resp_dist, 'linewidth', 1, 'color', [.5,.5,.5]);
 end
@@ -106,7 +109,7 @@ plot(0:20:100, mean_resp, 'linewidth', 3, 'Color', [0    0.4470    0.7410]);
 set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
 
 % visualise RT
-figure('name', 'simulated RT distributino'); hold on;
+figure('name', 'simulated RT distribution'); hold on;
 all_RT_dists = zeros(N, 6);
 for i = 1:N
     sim_RT = y_RT(:, i);
@@ -117,4 +120,60 @@ end
 mean_RT = mean(all_RT_dists, 1);
 plot(0:20:100, mean_RT, 'linewidth', 3, 'Color', [0    0.4470    0.7410]);
 set(gca, 'Xtick', 0:20:100)
+
+%% Fit
+est = tapas_fitModel(...
+    sim.y,...
+    sim.u,...
+    prc_model_config,...
+    obs_model_config,...
+    optim_config);
+
+
+%% Parameter recovery
+% So parameter recovery is pretty awful - keeps terminating optimisation.
+% Let's try fixing gamma0 and lambda0 (upper/lower asymptotes of
+% psychometric)
+obs_model_config.logitgamma0mu = tapas_logit(.0001, 1);
+obs_model_config.logitgamma0sa = 0;
+obs_model_config.logitlambda0mu = tapas_logit(.0001, 1);
+obs_model_config.logitlambda0sa = 0;
+obs_model_config = tapas_align_priors(obs_model_config);
+
+% set N iterations
+N = 200;
+
+% Parameters to recover
+prc_param_names = {};
+prc_param_idx   = [];
+prc_param_space = {};
+
+% obs_param_names = {'alpha', 'beta', 'gamma0', 'lambda0', 'mu', 'sigma0', 'gamma1', 'lambda1', 'sigma1'};
+% obs_param_space = {'logit', 'log', 'logit', 'logit', 'logit', 'log', 'log', 'log', 'log'};
+% obs_param_idx   = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+obs_param_names = {'alpha', 'beta',  'mu', 'sigma0', 'gamma1', 'lambda1', 'sigma1'};
+obs_param_space = {'logit', 'log', 'logit', 'log', 'log', 'log', 'log'};
+obs_param_idx   = [1, 2, 5, 6, 7, 8, 9];
+
+
+recov = parameter_recovery_master(u,...
+    prc_model_config,...
+    obs_model_config,...
+    optim_config,...
+    N,...
+    prc_param_names,...
+    prc_param_idx,...
+    prc_param_space,...
+    obs_param_names,...
+    obs_param_idx,...
+    obs_param_space);
+save('model4_recovery.mat', 'recov');
+
+recovery_figures(recov);
+
+
+
+
+
+
 

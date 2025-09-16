@@ -17,8 +17,18 @@ STE_dir = dir('STE_data\*.csv');
 N_files = numel(STE_dir);
 model_fits(N_files) = struct('ID', [], 'group', '', 'condition', '', 'est', struct());
 
+% Just to be fancy
+completion_times = zeros(N_files, 1);
+
 for i = 1:N_files
-    fprintf('\nFitting dataset %i\n', i)
+    tic;
+    fprintf('\nFitting dataset %i\n', i);
+    if i>1
+        avg_iter_time = mean(completion_times(1:i));
+        fprintf('\tAverage iteration time = %1.2fs', avg_iter_time)
+        estimated_total_time = avg_iter_time * ((N_files-i) + 1);
+        fprintf('\n\tEstimated completion time = %im, %1.2fs\n\n', floor(estimated_total_time/60), rem(estimated_total_time,60));
+    end
 
     % get ID, group, condition
     f_name = fullfile(STE_dir(i).folder, STE_dir(i).name);
@@ -37,7 +47,7 @@ for i = 1:N_files
     % subject responses
     sub_data.logRT = log(sub_data.Response_RT);
     sub_data.resp_state = double(sub_data.Cue_idx == sub_data.Response_idx);
-    y = [sub_data.resp_state, sub_data.logRT];%, sub_data.Confidence_idx];
+    y = [sub_data.resp_state, sub_data.logRT];
 
     % remove missing
     missed = isnan(sub_data.Response_idx);
@@ -54,6 +64,7 @@ for i = 1:N_files
             optim_config);
     catch
     end
+    completion_times(i) = toc;
 end
 
 

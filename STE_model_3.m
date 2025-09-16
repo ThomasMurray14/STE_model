@@ -129,9 +129,9 @@ est = tapas_fitModel(...
 N = 200;
 
 % Parameters to recover
-prc_param_names = {'om2', 'rho2', 'al'};
-prc_param_idx   = [13, 8, 15];
-prc_param_space = {'native', 'native', 'log'};
+prc_param_names = {'om2', 'al'};
+prc_param_idx   = [13, 15];
+prc_param_space = {'native', 'log'};
 
 obs_param_names = {'zeta0', 'zeta1', 'beta0', 'beta1', 'beta2', 'beta3', 'beta4', 'sa'};
 obs_param_idx   = [1, 2, 3, 4, 5, 6, 7, 8];

@@ -15,7 +15,9 @@ for iP = 1:numel(all_params)
         est = log(est);
         figname = ['log(', figname, ')'];
     elseif strcmp(recov.(all_params{iP}).space, 'logit')
-        % figure this out...
+        sim = tapas_logit(sim, 1);
+        est = tapas_logit(est, 1);
+        figname = ['logit(', figname, ')'];
     end
     figure('name', figname);  
     hold on;

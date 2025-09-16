@@ -36,9 +36,20 @@ recov.LME = nan(N, 1); % store LME
 recov.AIC = nan(N, 1); % store AIC
 recov.BIC = nan(N, 1); % store BIC
 
+% Just to be fancy
+completion_times = zeros(N, 1);
+
 % Main loop
 for i = 1:N
+    tic;
     fprintf('\nParameter recovery iteration %i\n', i);
+    if i>1
+        avg_iter_time = mean(completion_times(1:i));
+        fprintf('\tAverage iteration time = %1.2fs', avg_iter_time)
+        estimated_total_time = avg_iter_time * ((N-i) + 1);
+        fprintf('\n\tEstimated completion time = %im, %1.2fs\n\n', floor(estimated_total_time/60), rem(estimated_total_time,60));
+    end
+
     sim = tapas_sampleModel(u, prc_model_config, obs_model_config);
     
     % Store simulated prc params
@@ -89,6 +100,7 @@ for i = 1:N
         catch
             fprintf('\nCannot fit')
         end
+        completion_times(i) = toc;
     end
 end
 
