@@ -21,11 +21,11 @@ function [logp, yhat, res] = obs3_gaussianRT(r, infStates, ptrans)
 
 
 % Transform parameters to their native space
-mu = tapas_sgm(ptrans(1), 1);
-sigma0 = exp(ptrans(2));
-gamma = exp(ptrans(3));
-lambda = exp(ptrans(4));
-sigma1 = exp(ptrans(5));
+mu = tapas_sgm(ptrans(1), 1); % midpoint
+sigma0 = exp(ptrans(2)); % width
+gamma = exp(ptrans(3)); % baseline
+lambda = exp(ptrans(4)); % height
+sigma1 = exp(ptrans(5)); % noise
 
 % gaussian function
 G = @(x,mu,sigma0,gamma,lambda)gamma+(lambda*exp(-((x-mu)^2)/(2*(sigma0^2))));

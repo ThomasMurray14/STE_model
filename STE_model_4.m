@@ -4,7 +4,6 @@
 %%
 clear;
 close all;
-addpath('prc1');
 addpath('obs3');
 
 %% 

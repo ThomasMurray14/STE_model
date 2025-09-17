@@ -109,8 +109,7 @@ for k = 2:1:n
         %%%%%%%%%%%%%%%%%%%%%%
         
         % 2nd level prediction
-        %rho_trial = rho(2)*stim_noise(k);
-        muhat(k,2) = mu(k-1,2);% +t(k) *rho_trial*cue(k);
+        muhat(k,2) = mu(k-1,2);% +t(k) *rho(2)*cue(k);
         
         % 1st level
         % ~~~~~~~~~
