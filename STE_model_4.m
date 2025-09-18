@@ -4,7 +4,7 @@
 %%
 clear;
 close all;
-addpath('obs3');
+addpath('obs3_attempt2');
 
 %% 
 
@@ -41,21 +41,21 @@ obs_model_config.logbetamu = log(15);
 obs_model_config.logbetasa = 4;
 
 obs_model_config.logitgamma0mu = tapas_logit(.0001, 1);
-obs_model_config.logitgamma0sa = 4;
+obs_model_config.logitgamma0sa = 0;
 
 obs_model_config.logitlambda0mu = tapas_logit(.0001, 1);
-obs_model_config.logitlambda0sa = 4;
+obs_model_config.logitlambda0sa = 0;
 
 obs_model_config.logitmumu = tapas_logit(.5, 1);
-obs_model_config.logitmusa = 4;
+obs_model_config.logitmusa = 0;
 
-obs_model_config.logsigma0mu = log(.2);
+obs_model_config.logsigma0mu = log(.7); % width
 obs_model_config.logsigma0sa = 4;
 
-obs_model_config.loggamma1mu = log(6); % baseline logRT
-obs_model_config.loggamma1sa = 4;
+obs_model_config.loggamma1mu = log(0); % baseline logRT - fix to 0
+obs_model_config.loggamma1sa = 0;
 
-obs_model_config.loglambda1mu = log(1); % peak of logRT (above baseline)
+obs_model_config.loglambda1mu = log(7); % peak of logRT (above baseline)
 obs_model_config.loglambda1sa = 4;
 
 obs_model_config.logsigma1mu = log(1); % logRT noise
@@ -150,9 +150,13 @@ prc_param_space = {};
 % obs_param_names = {'alpha', 'beta', 'gamma0', 'lambda0', 'mu', 'sigma0', 'gamma1', 'lambda1', 'sigma1'};
 % obs_param_space = {'logit', 'log', 'logit', 'logit', 'logit', 'log', 'log', 'log', 'log'};
 % obs_param_idx   = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-obs_param_names = {'alpha', 'beta',  'mu', 'sigma0', 'gamma1', 'lambda1', 'sigma1'};
-obs_param_space = {'logit', 'log', 'logit', 'log', 'log', 'log', 'log'};
-obs_param_idx   = [1, 2, 5, 6, 7, 8, 9];
+% obs_param_names = {'alpha', 'beta',  'mu', 'sigma0', 'gamma1', 'lambda1', 'sigma1'};
+% obs_param_space = {'logit', 'log', 'logit', 'log', 'log', 'log', 'log'};
+% obs_param_idx   = [1, 2, 5, 6, 7, 8, 9];
+
+obs_param_names = {'alpha', 'beta', 'sigma0', 'lambda1', 'sigma1'};
+obs_param_space = {'logit', 'log', 'log', 'log', 'log'};
+obs_param_idx   = [1, 2, 6, 8, 9];
 
 
 recov = parameter_recovery_master(u,...
@@ -166,11 +170,14 @@ recov = parameter_recovery_master(u,...
     obs_param_names,...
     obs_param_idx,...
     obs_param_space);
-save('model4_recovery.mat', 'recov');
+save('model4_attempt2_recovery.mat', 'recov');
 
 recovery_figures(recov);
 
 
+%% Fit actual data
+model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config);
+save('model4_fit.mat', 'model_fits');
 
 
 
