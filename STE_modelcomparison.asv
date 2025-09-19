@@ -62,18 +62,18 @@ title('BMS')
 
 fprintf('\nAll data:')
 N_fit = N_inc - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
-fprintf('\n\tN fit:')
+fprintf('\nN fit:')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %i/%i', model_names{i}, N_fit(i), N_inc);
+    fprintf('\t\t\n%s: %i/%i', model_names{i}, N_fit(i), N_inc);
 end
-fprintf('\n\tBayes Ombinus Risk: %1.3f', bor);
-fprintf('\n\tAIC (sum):')
+fprintf('\nBayes Ombinus Risk: %1.3f', bor);
+fprintf('\n\nAIC (sum):')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %1.1f', model_names{i}, AICs_sum(i));
+    fprintf('\t\n%s: %1.1f', model_names{i}, AICs_sum(i));
 end
-fprintf('\n\tBIC (sum):')
+fprintf('\n\nBIC (sum):')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %1.1f', model_names{i}, BICs_sum(i));
+    fprintf('\t\n%s: %1.1f', model_names{i}, BICs_sum(i));
 end
 
 
@@ -132,21 +132,19 @@ set(gca, 'xticklabels', model_names)
 ylabel('PXP')
 title('BMS (Safe only)')
 
-fprintf('\n\nSafe only:')
-
 N_fit = N_safe - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
-fprintf('\n\tN fit:')
+fprintf('\nN fit:')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %i/%i', model_names{i}, N_fit(i), N_safe);
+    fprintf('\t\n%s: %i/%i', model_names{i}, N_fit(i), N_safe);
 end
-fprintf('\n\tBayes Ombinus Risk: %1.3f', bor);
-fprintf('\n\tAIC (sum):')
+fprintf('\nBayes Ombinus Risk: %1.3f', bor);
+fprintf('\n\nAIC (sum):')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %1.1f', model_names{i}, AICs_sum(i));
+    fprintf('\t\n%s: %1.1f', model_names{i}, AICs_sum(i));
 end
-fprintf('\n\tBIC (sum):')
+fprintf('\n\nBIC (sum):')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %1.1f', model_names{i}, BICs_sum(i));
+    fprintf('\t\n%s: %1.1f', model_names{i}, BICs_sum(i));
 end
 
 figure; hold on;
@@ -206,22 +204,19 @@ set(gca, 'xticklabels', model_names)
 ylabel('PXP')
 title('BMS (Threat only)')
 
-
-fprintf('\n\nThreat only:')
-
 N_fit = N_threat - (sum(isnan(LMEs), 1) + sum(isinf(LMEs), 1));
-fprintf('\n\tN fit:')
+fprintf('\nN fit:')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %i/%i', model_names{i}, N_fit(i), N_threat);
+    fprintf('\t\n%s: %i/%i', model_names{i}, N_fit(i), N_threat);
 end
-fprintf('\n\tBayes Ombinus Risk: %1.3f', bor);
-fprintf('\n\tAIC (sum):')
+fprintf('\nBayes Ombinus Risk: %1.3f', bor);
+fprintf('\n\nAIC (sum):')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %1.1f', model_names{i}, AICs_sum(i));
+    fprintf('\t\n%s: %1.1f', model_names{i}, AICs_sum(i));
 end
-fprintf('\n\tBIC (sum):')
+fprintf('\n\nBIC (sum):')
 for i = 1:N_models
-    fprintf('\n\t\t%s: %1.1f', model_names{i}, BICs_sum(i));
+    fprintf('\t\n%s: %1.1f', model_names{i}, BICs_sum(i));
 end
 
 figure; hold on;
@@ -245,4 +240,3 @@ set(gca, 'xtick', 1:N_models, 'xticklabels', model_names)
 ylabel('AIC')
 title('Threat only')
 
-fprintf('\n\n')
