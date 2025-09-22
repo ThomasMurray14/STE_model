@@ -246,3 +246,30 @@ ylabel('AIC')
 title('Threat only')
 
 fprintf('\n\n')
+
+
+
+
+
+
+%% Just to test different branches of response models
+
+
+LL_resp = nan(N_inc, N_models);
+LL_RT = nan(N_inc, N_models);
+for iP = 1:N_inc
+    for iM = 1:N_models
+        if ~isempty(models(iM).model_fits(iP).est)
+            LL_resp(iP, iM) = sum(models(iM).model_fits(iP).est.optim.trialLogLlsplit(:,1));
+            LL_RT(iP, iM) = sum(models(iM).model_fits(iP).est.optim.trialLogLlsplit(:,2));
+        end
+    end
+end
+
+
+
+
+
+
+
+
