@@ -95,8 +95,10 @@ end
 y_resp = squeeze(all_y(:,1,:)); % uxN
 y_RT = squeeze(all_y(:,2,:));
 
+figure;
+
 % visualise psychometric
-figure('name', 'simulated response distribution'); hold on;
+subplot(2,1,1); hold on;
 all_resp_dists = zeros(N, 6);
 for i = 1:N
     sim_resp_dist = arrayfun(@(x) mean(y_resp(sub_data.Outcome_p_sad==x, i)), 0:20:100);
@@ -106,9 +108,10 @@ end
 mean_resp = mean(all_resp_dists, 1);
 plot(0:20:100, mean_resp, 'linewidth', 3, 'Color', [0    0.4470    0.7410]);
 set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
+title('simulated response distribution')
 
 % visualise RT
-figure('name', 'simulated RT distribution'); hold on;
+subplot(2,1,2); hold on;
 all_RT_dists = zeros(N, 6);
 for i = 1:N
     sim_RT = y_RT(:, i);
@@ -119,6 +122,7 @@ end
 mean_RT = mean(all_RT_dists, 1);
 plot(0:20:100, mean_RT, 'linewidth', 3, 'Color', [0    0.4470    0.7410]);
 set(gca, 'Xtick', 0:20:100)
+title('simulated RT distribution')
 
 %% Fit
 est = tapas_fitModel(...
