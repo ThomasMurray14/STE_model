@@ -1,6 +1,10 @@
 function model_fits = fit_master(u, prc_model_config, obs_model_config, optim_config)
 % master function to fit models to actual data
 % 
+%   Maybe kill this script, and just place into the model scripts. It only
+%   works for 3 of the setups so there's not much point
+% 
+% 
 % input:
 %   u                   - model input. Missed responses for each subject
 %                           are removed
@@ -46,11 +50,8 @@ for i = 1:N_files
 
     % subject responses
     sub_data.logRT = log(sub_data.Response_RT);
-    % sub_data.resp_state = double(sub_data.Cue_idx == sub_data.Response_idx);
-    % y = [sub_data.resp_state, sub_data.logRT];
-
-    y = [sub_data.Response_idx, sub_data.logRT]; %%%% For learning-free model
-
+    sub_data.resp_state = double(sub_data.Cue_idx == sub_data.Response_idx);
+    y = [sub_data.resp_state, sub_data.logRT];
 
     % remove missing
     missed = isnan(sub_data.Response_idx);
@@ -69,7 +70,6 @@ for i = 1:N_files
     end
     completion_times(i) = toc;
 end
-
 
 
 end

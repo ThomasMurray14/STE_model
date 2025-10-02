@@ -252,24 +252,55 @@ fprintf('\n\n')
 
 
 
-%% Just to test different branches of response models
 
+%% Split obs models
+model_fits = importdata('split_obs_fits.mat');
+model_fits(excluded_idx) = []; % remove excluded IDs
+N_inc = numel(model_fits);
 
-LL_resp = nan(N_inc, N_models);
-LL_RT = nan(N_inc, N_models);
+% split model comparisons
+LMEs_resp = nan(N_inc, 4);
+LMEs_RT = nan(N_inc, 4);
 for iP = 1:N_inc
-    for iM = 1:N_models
-        if ~isempty(models(iM).model_fits(iP).est)
-            LL_resp(iP, iM) = sum(models(iM).model_fits(iP).est.optim.trialLogLlsplit(:,1));
-            LL_RT(iP, iM) = sum(models(iM).model_fits(iP).est.optim.trialLogLlsplit(:,2));
+    for iM = 1:4
+
+        % response model
+        if ~isempty(model_fits(iP).(['model', num2str(iM), '_resp_est']) )
+            LMEs_resp(iP, iM) = model_fits(iP).(['model', num2str(iM), '_resp_est']).optim.LME;
         end
+        
+        % RT model
+        if ~isempty(model_fits(iP).(['model', num2str(iM), '_RT_est']) )
+            LMEs_RT(iP, iM) = model_fits(iP).(['model', num2str(iM), '_RT_est']).optim.LME;
+        end
+
     end
 end
 
+LMEs_resp = LMEs_resp(:, 1:3);
+LMEs_RT = LMEs_RT(:, 1:3);
+N_models = 3;
 
+% response model BMS
+valid_resp = ~(isnan(LMEs_resp) + isinf(LMEs_resp));
+LMEs_resp_valid = LMEs_resp(~any(~valid_resp, 2), :);
+[alpha,exp_r,xp,pxp,bor] = spm_BMS(LMEs_resp_valid);
+figure('name', 'Response models (Split)');
+bar(1:N_models, pxp, 'EdgeColor', 'none');
+set(gca, 'xticklabels', model_names)
+xtickangle(45)
+ylabel('PXP')
+title('BMS');
 
-
-
-
+% RT model BMS
+valid_RT = ~(isnan(LMEs_RT) + isinf(LMEs_RT));
+LMEs_RT_valid = LMEs_RT(~any(~valid_RT, 2), :);
+[alpha,exp_r,xp,pxp,bor] = spm_BMS(LMEs_RT_valid);
+figure('name', 'RT models (Split)');
+bar(1:N_models, pxp, 'EdgeColor', 'none');
+set(gca, 'xticklabels', model_names)
+xtickangle(45)
+ylabel('PXP')
+title('BMS');
 
 
