@@ -51,7 +51,7 @@ prc_model_config.omsa(2)    = 4;
 prc_model_config.rhomu(2)   = 0; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
 prc_model_config.rhosa(2)   = 4;
 
-prc_model_config.logalmu    = log(.1); % perceptual uncertainty
+prc_model_config.logalmu    = log(.5); % perceptual uncertainty
 prc_model_config.logalsa    = 2;
 
 prc_model_config = tapas_align_priors(prc_model_config);
@@ -98,12 +98,10 @@ sim = tapas_simModel(u,...
 
 
 sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
-N_sad = sum(sim_sad)
 
 
 visualise_psychometric(u, sub_data, 'prc1_ehgf_binary_pu_tbt', prc_params, 'obs1_comb_obs', obs_params, 20)
-
-
+N_sad = sum(sim_sad)
 
 %% Plot trajectory
 prc1_ehgf_binary_tbt_plotTraj(sim);

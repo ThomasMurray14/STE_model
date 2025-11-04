@@ -48,7 +48,7 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.rhomu(2)   = 0; % bias towards sad
+prc_model_config.rhomu(2)   = 3; % bias towards sad
 prc_model_config.rhosa(2)   = 4;
 
 prc_model_config.logalmu    = log(.1); % perceptual uncertainty

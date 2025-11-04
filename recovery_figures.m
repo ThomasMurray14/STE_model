@@ -19,10 +19,12 @@ for iP = 1:numel(all_params)
         est = tapas_logit(est, 1);
         figname = ['logit(', figname, ')'];
     end
+
     figure('name', figname);  
     hold on;
     scatter(sim, est);
-    refline(1,0); 
+    h = refline(1,0); 
+    h.Color = [0.8500    0.3250    0.0980];
     xlabel('Simulated');
     ylabel('Estimated');
     corr_string = sprintf("%s\nPearson's r = %.3f; Spearman's \\rho = %.3f; Kendall's \\tau = %.3f", ...

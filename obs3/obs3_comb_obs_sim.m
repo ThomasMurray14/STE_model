@@ -85,7 +85,7 @@ y_binary = binornd(1, yhat_binary);
 %% Run sim for continuous data modality (logRTs)
 
 % gaussian function
-G = @(x,mu,sigma0,gamma,lambda)gamma+(lambda*exp(-((x-mu)^2)/(2*(sigma0^2))));
+G = @(x,mu,sigma0,gamma,lambda) gamma + lambda .* exp(-((x - mu).^2) ./ (2 * (sigma0.^2)));
 
 % inputs
 u = r.u;

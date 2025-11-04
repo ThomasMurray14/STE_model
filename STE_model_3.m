@@ -59,7 +59,7 @@ prc_model_config = tapas_align_priors(prc_model_config);
 obs_model_config.logzeta0mu = log(1);
 obs_model_config.logzeta0sa = 2;
 
-obs_model_config.zeta1mu = 0;
+obs_model_config.zeta1mu = 3;
 obs_model_config.zeta1sa = 2;
 
 obs_model_config.beta0mu = 6.5000;

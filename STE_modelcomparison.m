@@ -1,18 +1,20 @@
 % Script to get model comparison metrics
 
+clear;
 close all
+
 
 %% load model fits
 models(1).model_fits = importdata('model1_fit.mat');
 models(2).model_fits = importdata('model2_fit.mat');
 models(3).model_fits = importdata('model3_fit.mat');
-models(4).model_fits = importdata('model4_fit.mat');
+% models(4).model_fits = importdata('model4_fit.mat');
 
 model_names = {
     'Prediction bias';
     'Perception bias';
-    'Response bias';
-    'No learning'};
+    'Response bias'};
+    % 'No learning'};
 
 N_models = numel(model_names);
 
@@ -56,7 +58,7 @@ AICs_sum = sum(AICs_valid, 1);
 
 figure;
 bar(1:N_models, pxp, 'EdgeColor', 'none');
-set(gca, 'xticklabels', model_names)
+set(gca, 'xticklabels', model_names, 'XTickLabelRotation', 45)
 ylabel('PXP')
 title('BMS')
 
@@ -277,9 +279,10 @@ for iP = 1:N_inc
     end
 end
 
-LMEs_resp = LMEs_resp(:, 1:3);
-LMEs_RT = LMEs_RT(:, 1:3);
-N_models = 3;
+% LMEs_resp = LMEs_resp(:, 1:3);
+% LMEs_RT = LMEs_RT(:, 1:3);
+% N_models = 3;
+N_models = 4;
 
 % response model BMS
 valid_resp = ~(isnan(LMEs_resp) + isinf(LMEs_resp));

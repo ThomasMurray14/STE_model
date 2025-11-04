@@ -34,22 +34,22 @@ prc_model_config.omsa(2) = 0;
 prc_model_config.omsa(2) = 0;
 
 % Obs model only
-obs_model_config.logitalphamu = tapas_logit(.5, 1);
+obs_model_config.logitalphamu = tapas_logit(.5, 1); % PSE
 obs_model_config.logitalphasa = 4;
 
-obs_model_config.logbetamu = log(15);
+obs_model_config.logbetamu = log(15); % Slope
 obs_model_config.logbetasa = 4;
 
-obs_model_config.logitgamma0mu = tapas_logit(.0001, 1);
+obs_model_config.logitgamma0mu = tapas_logit(.0001, 1); % upper asymptote
 obs_model_config.logitgamma0sa = 0;
 
-obs_model_config.logitlambda0mu = tapas_logit(.0001, 1);
+obs_model_config.logitlambda0mu = tapas_logit(.0001, 1); % lower asymptote
 obs_model_config.logitlambda0sa = 0;
 
-obs_model_config.logitmumu = tapas_logit(.5, 1);
+obs_model_config.logitmumu = tapas_logit(.5, 1); % midpoint RT (Not used - uses alpha (PSE) instead)
 obs_model_config.logitmusa = 0;
 
-obs_model_config.logsigma0mu = log(.7); % width
+obs_model_config.logsigma0mu = log(.01); % width
 obs_model_config.logsigma0sa = 4;
 
 obs_model_config.loggamma1mu = log(0); % baseline logRT - fix to 0
@@ -108,7 +108,8 @@ end
 mean_resp = mean(all_resp_dists, 1);
 plot(0:20:100, mean_resp, 'linewidth', 3, 'Color', [0    0.4470    0.7410]);
 set(gca, 'Ylim', [0,1], 'Xtick', 0:20:100)
-title('simulated response distribution')
+ylabel('p(Sad)')
+title('simulated response distribution');
 
 % visualise RT
 subplot(2,1,2); hold on;
@@ -121,8 +122,18 @@ for i = 1:N
 end
 mean_RT = mean(all_RT_dists, 1);
 plot(0:20:100, mean_RT, 'linewidth', 3, 'Color', [0    0.4470    0.7410]);
+
+
+% G = @(x,mu,sigma0,gamma,lambda) gamma + lambda .* exp(-((x - mu).^2) ./ (2 * (sigma0.^2)));
+% x=0:.01:1;
+% gaus=G(x, tapas_sgm(obs_model_config.logitmumu, 1), exp(obs_model_config.logsigma0mu), exp(obs_model_config.loggamma1mu), exp(obs_model_config.loglambda1mu));
+% plot(0:1:100, gaus, 'red', 'linewidth', 3);
+
+
 set(gca, 'Xtick', 0:20:100)
-title('simulated RT distribution')
+xlabel('%Sad');
+ylabel('logRT');
+title('simulated RT distribution');
 
 %% Fit
 est = tapas_fitModel(...
