@@ -48,10 +48,10 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.rhomu(2)   = 0; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
+prc_model_config.rhomu(2)   = 5; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
 prc_model_config.rhosa(2)   = 4;
 
-prc_model_config.logalmu    = log(.5); % perceptual uncertainty
+prc_model_config.logalmu    = log(.0005); % perceptual uncertainty
 prc_model_config.logalsa    = 2;
 
 prc_model_config = tapas_align_priors(prc_model_config);

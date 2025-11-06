@@ -76,6 +76,7 @@ sa2    = infStates(:,2,4);
 % mu3    = infStates(:,3,3);
 
 
+
 % Surprise
 % ~~~~~~~~
 poo = mu1hat.^u.*(1-mu1hat).^(1-u); % probability of observed outcome
@@ -95,11 +96,17 @@ inferv = tapas_sgm(mu2, 1).*(1 -tapas_sgm(mu2, 1)).*sa2; % transform down to 1st
 % pv = tapas_sgm(mu2, 1).*(1-tapas_sgm(mu2, 1)).*exp(mu3); % transform down to 1st level
 
 
+% mu1 = infStates(:,1,3);
+% pu = 0.5-abs(mu1-0.5);
+
+
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*pv;
 logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*stim_noise;
 
+% logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*pu; %%% THIS SEEMS
+% TO WORK... MAX RT SHIFTS WITH PSE
 
 
 % Initialize random number generator

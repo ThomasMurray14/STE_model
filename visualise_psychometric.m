@@ -1,4 +1,4 @@
-function visualise_psychometric(u, sub_data, prc_name, prc_params, obs_name, obs_params, N);
+function visualise_psychometric(u, sub_data, prc_name, prc_params, obs_name, obs_params, N)
 % Function to simulate responses N times and visualise the p(sad) and RT
 % distributions
 

@@ -126,6 +126,8 @@ for k = 2:1:n
         und0 = exp(-(u(k) -eta0)^2/(2*al));
         mu(k,1) = muhat(k,1) *und1 /(muhat(k,1) *und1 + (1 -muhat(k,1)) *und0);
 
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Rho bias
         if mu(k,1) < eps % crashes if mu = 1 or 0
             mu(k,1) = eps;
@@ -135,6 +137,8 @@ for k = 2:1:n
         mu_temp = tapas_logit(mu(k,1), 1);
         mu_temp = mu_temp + (rho(2)*cue(k));
         mu(k,1) = tapas_sgm(mu_temp, 1);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         
         % Prediction error
         da(k,1) = mu(k,1) -muhat(k,1);

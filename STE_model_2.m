@@ -48,10 +48,10 @@ optim_config.nRandInit = 5;
 prc_model_config.ommu(2)    = -2;
 prc_model_config.omsa(2)    = 4;
 
-prc_model_config.rhomu(2)   = 3; % bias towards sad
+prc_model_config.rhomu(2)   = 5; % bias towards sad
 prc_model_config.rhosa(2)   = 4;
 
-prc_model_config.logalmu    = log(.1); % perceptual uncertainty
+prc_model_config.logalmu    = log(.0005); % perceptual uncertainty
 prc_model_config.logalsa    = 2;
 
 prc_model_config = tapas_align_priors(prc_model_config);
@@ -71,7 +71,7 @@ obs_model_config.beta2sa = 4;
 obs_model_config.beta3mu = 0;
 obs_model_config.beta3sa = 4;
 
-obs_model_config.beta4mu = 2;
+obs_model_config.beta4mu = 4;
 obs_model_config.beta4sa = 4;
 
 obs_model_config.logsasa = log(.1);
@@ -89,7 +89,7 @@ obs_params = obs_model_config.priormus;
 obs_params(1) = exp(obs_params(1));
 obs_params(7) = exp(obs_params(7));
 % obs_params(8) = 3;%exp(obs_params(8));
-sim = tapas_simModel(u,...
+sim_2_bias = tapas_simModel(u,...
     'prc2_ehgf_binary_pu_tbt',...
     prc_params,...
     'obs1_comb_obs',...
@@ -97,7 +97,7 @@ sim = tapas_simModel(u,...
     123456789);
 
 
-sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+sim_sad = (sub_data.Cue_idx == 1 & sim_2_bias.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim_2_bias.y(:,1) == 0);
 N_sad = sum(sim_sad);
 
 
@@ -106,14 +106,14 @@ visualise_psychometric(u, sub_data, 'prc2_ehgf_binary_pu_tbt', prc_params, 'obs1
 
 
 %% Plot trajectory
-prc2_ehgf_binary_tbt_plotTraj(sim);
+prc2_ehgf_binary_tbt_plotTraj(sim_2_bias);
 
 
 %% recover parameters
 
 est = tapas_fitModel(...
-    sim.y,...
-    sim.u,...
+    sim_2_bias.y,...
+    sim_2_bias.u,...
     prc_model_config,...
     obs_model_config,...
     optim_config);

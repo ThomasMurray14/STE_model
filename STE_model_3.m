@@ -59,7 +59,7 @@ prc_model_config = tapas_align_priors(prc_model_config);
 obs_model_config.logzeta0mu = log(1);
 obs_model_config.logzeta0sa = 2;
 
-obs_model_config.zeta1mu = 3;
+obs_model_config.zeta1mu = 3; % Response bias
 obs_model_config.zeta1sa = 2;
 
 obs_model_config.beta0mu = 6.5000;
@@ -92,7 +92,7 @@ obs_params = obs_model_config.priormus;
 obs_params(1) = exp(obs_params(1));
 obs_params(8) = exp(obs_params(8));
 
-sim = tapas_simModel(u,...
+sim_3_bias = tapas_simModel(u,...
     'prc1_ehgf_binary_pu_tbt',...
     prc_params,...
     'obs2_comb_obs',...
@@ -100,7 +100,7 @@ sim = tapas_simModel(u,...
     123456789);
 
 
-sim_sad = (sub_data.Cue_idx == 1 & sim.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim.y(:,1) == 0);
+sim_sad = (sub_data.Cue_idx == 1 & sim_3_bias.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim_3_bias.y(:,1) == 0);
 N_sad = sum(sim_sad);
 
 
@@ -109,14 +109,14 @@ visualise_psychometric(u, sub_data, 'prc1_ehgf_binary_pu_tbt', prc_params, 'obs2
 
 
 %% Plot trajectory
-prc1_ehgf_binary_tbt_plotTraj(sim);
+prc1_ehgf_binary_tbt_plotTraj(sim_3_bias);
 
 
 %% recover parameters
 
 est = tapas_fitModel(...
-    sim.y,...
-    sim.u,...
+    sim_3_bias.y,...
+    sim_3_bias.u,...
     prc_model_config,...
     obs_model_config,...
     optim_config);
