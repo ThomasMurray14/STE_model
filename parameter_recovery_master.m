@@ -35,6 +35,8 @@ end
 recov.LME = nan(N, 1); % store LME
 recov.AIC = nan(N, 1); % store AIC
 recov.BIC = nan(N, 1); % store BIC
+recov.sim = cell(N, 1);
+recov.est = cell(N, 1);
 
 % Just to be fancy
 completion_times = zeros(N, 1);
@@ -52,6 +54,7 @@ for i = 1:N
     end
 
     sim = tapas_sampleModel(u, prc_model_config, obs_model_config);
+    recov.sim{i} = sim;
     
     % Store simulated prc params
     for iP = 1:numel(prc_params)
@@ -77,6 +80,7 @@ for i = 1:N
                 prc_model_config,...
                 obs_model_config,...
                 optim_config);
+            recov.est{i} = est; % store est (for debugging)
 
             % get estimated parameters
             if ~isinf(est.optim.LME)

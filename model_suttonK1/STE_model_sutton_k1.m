@@ -111,12 +111,12 @@ bopars = tapas_fitModel([],...
 % Ok let's try the combined response model
 prc_model_config = prc_sutton_k1_binary_config();
 
-prc_model_config.logmumu = log(3); % set mu
 
-prc_model_config.logitvhat_1sa = tapas_logit(0.5, 1); % fix vhat1 to .5
+prc_model_config.logmumu = log(5); % set mu
+prc_model_config.logitvhat_1mu = tapas_logit(0.5, 1); % fix vhat1 to .5
 prc_model_config.logitvhat_1sa = 0; % fix vhat1 to .5
-
 prc_model_config.logRhatmu = log(.5); % set Rhat
+prc_model_config.logRhatsa = 0; % set Rhat sa
 prc_model_config.logh_1mu = log(.005);
 
 prc_model_config = tapas_align_priors(prc_model_config);
@@ -124,6 +124,8 @@ prc_model_config = tapas_align_priors(prc_model_config);
 
 
 obs_model_config = obs_suttonK1_comb_obs_config();
+obs_model_config.logzemu = log(1);
+obs_model_config.logzesa = 2;
 obs_model_config.beta1mu = -1;
 obs_model_config.beta2mu = 1;
 obs_model_config = tapas_align_priors(obs_model_config);
@@ -144,7 +146,7 @@ sim = tapas_simModel(u,...
 % plot trajectory
 prc_sutton_k1_binary_plotTraj(sim);
 
-
+%%
 est = tapas_fitModel(...
     sim.y,...
     sim.u,...
@@ -154,31 +156,32 @@ est = tapas_fitModel(...
 
 
 
-
 %% Full parameter recovery
 
 % set perceptual priors
 prc_model_config = prc_sutton_k1_binary_config();
 prc_model_config.logmumu = log(3); % set mu prior mean
-prc_model_config.logmusa = 16; % set mu prior mean
-prc_model_config.logRhatmu = log(.5); % set prior mean Rhat
-prc_model_config.logRhatsa = 16; % set prior mean Rhat
-prc_model_config.logitvhat_1sa = tapas_logit(0.5, 1); % set vhat1 to .5
+prc_model_config.logmusa = 8; % set mu prior sa
+prc_model_config.logRhatmu = log(1); % set prior mean Rhat
+prc_model_config.logRhatsa = 0; % set prior mean Rhat
+prc_model_config.logitvhat_1mu = tapas_logit(0.5, 1); % set vhat1 to .5
 prc_model_config.logitvhat_1sa = 0; % fix
 prc_model_config.logh_1mu = log(.005);
-prc_model_config.logh_1sa = 4;
+prc_model_config.logh_1sa = 0; % fix
 prc_model_config = tapas_align_priors(prc_model_config);
 
 % set obs model priors
 obs_model_config = obs_suttonK1_comb_obs_config();
-obs_model_config.logzemu = log(48);
-obs_model_config.logzesa = 8;
+obs_model_config.logzemu = log(1);
+obs_model_config.logzesa = 2;
+obs_model_config.beta0mu = 6.5;
+obs_model_config.beta0sa = 4;
 obs_model_config.beta1mu = -1;
-obs_model_config.beta1sa = 8;
+obs_model_config.beta1sa = 4;
 obs_model_config.beta2mu = 1;
-obs_model_config.beta2sa = 8;
-obs_model_config.logsamu = log(3);
-obs_model_config.logsasa = 8;
+obs_model_config.beta2sa = 4;
+obs_model_config.logsamu = log(0.1);
+obs_model_config.logsasa = 2;
 obs_model_config = tapas_align_priors(obs_model_config);
 
 % optimisation algorithm
@@ -186,15 +189,16 @@ optim_config     = tapas_quasinewton_optim_config();
 optim_config.nRandInit = 10; % Annoying but fits better
 
 % number of iterations
-N=200;
+N=100;
 
 % Parameters to recover
-prc_param_names = {'mu', 'Rhat', 'h_1'};
-prc_param_idx   = [1, 2, 4];
-prc_param_space = {'log', 'log', 'log'};
+prc_param_names = {'mu'};
+prc_param_idx   = [1];
+prc_param_space = {'log'};
 obs_param_names = {'ze', 'beta0', 'beta1', 'beta2', 'sa'};
 obs_param_idx   = [1, 2, 3, 4, 5];
 obs_param_space = {'log', 'native', 'native', 'native', 'log'};
+
 
 
 recov = parameter_recovery_master(u,...
@@ -211,8 +215,6 @@ recov = parameter_recovery_master(u,...
 save('model_suttonK1_recovery.mat', 'recov');
 recovery_figures(recov);
 
-
-% Check parameter values that result in LME=-Inf
 
 
 

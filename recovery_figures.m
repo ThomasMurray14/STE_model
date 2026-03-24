@@ -2,7 +2,7 @@ function recovery_figures(recov)
 
 
 all_params = fieldnames(recov);
-all_params(ismember(all_params, {'LME', 'AIC', 'BIC', 'est'})) = [];
+all_params(ismember(all_params, {'LME', 'AIC', 'BIC', 'sim', 'est'})) = [];
 
 
 for iP = 1:numel(all_params)

@@ -3,6 +3,9 @@
 clear; close all; clc
 
 
+# % Add RT filter (<100ms)
+
+
 %% Get inputs
 % example data (to get contingencies etc)
 sub_data = readtable('..\STE_data\10369536_A_Threat.csv');

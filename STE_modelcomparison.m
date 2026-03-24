@@ -4,7 +4,7 @@ clear;
 close all
 
 # % Use VBA toolbox for model comparison (ask Eddie)
-
+% Use VBA_groupBMC(LME')
 
 
 %% load model fits

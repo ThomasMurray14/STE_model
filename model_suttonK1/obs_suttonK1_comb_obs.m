@@ -112,7 +112,7 @@ u(r.irr) = [];
 da = r.traj.da; % prediction error
 be = r.traj.be; % beta - unconstrained learning rate (log gain)
 al = r.traj.al; % alpha
-h = r.traj.h; % h (not sure)
+h = r.traj.h; % h
 v = r.traj.v; % posterior
 vhat = r.traj.vhat; % prediction
 
