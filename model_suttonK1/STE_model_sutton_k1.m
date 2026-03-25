@@ -160,14 +160,14 @@ est = tapas_fitModel(...
 
 % set perceptual priors
 prc_model_config = prc_sutton_k1_binary_config();
-prc_model_config.logmumu = log(3); % set mu prior mean
-prc_model_config.logmusa = 8; % set mu prior sa
-prc_model_config.logRhatmu = log(1); % set prior mean Rhat
-prc_model_config.logRhatsa = 0; % set prior mean Rhat
-prc_model_config.logitvhat_1mu = tapas_logit(0.5, 1); % set vhat1 to .5
-prc_model_config.logitvhat_1sa = 0; % fix
-prc_model_config.logh_1mu = log(.005);
-prc_model_config.logh_1sa = 0; % fix
+prc_model_config.logmumu        = log(3); % set mu prior mean
+prc_model_config.logmusa        = 8; % set mu prior sa
+prc_model_config.logRhatmu      = log(1); % set prior mean Rhat
+prc_model_config.logRhatsa      = 0; % set prior mean Rhat
+prc_model_config.logitvhat_1mu  = tapas_logit(0.5, 1); % set vhat1 to .5
+prc_model_config.logitvhat_1sa  = 0; % fix
+prc_model_config.logh_1mu       = log(.005);
+prc_model_config.logh_1sa       = 0; % fix
 prc_model_config = tapas_align_priors(prc_model_config);
 
 % set obs model priors
@@ -178,8 +178,8 @@ obs_model_config.beta0mu = 6.5;
 obs_model_config.beta0sa = 4;
 obs_model_config.beta1mu = -1;
 obs_model_config.beta1sa = 4;
-obs_model_config.beta2mu = 1;
-obs_model_config.beta2sa = 4;
+obs_model_config.beta2mu = 4;
+obs_model_config.beta2sa = 2;
 obs_model_config.logsamu = log(0.1);
 obs_model_config.logsasa = 2;
 obs_model_config = tapas_align_priors(obs_model_config);
@@ -212,7 +212,7 @@ recov = parameter_recovery_master(u,...
     obs_param_names,...
     obs_param_idx,...
     obs_param_space);
-save('model_suttonK1_recovery.mat', 'recov');
+save('model_suttonK1_recovery2.mat', 'recov');
 recovery_figures(recov);
 
 
