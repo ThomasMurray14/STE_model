@@ -1,0 +1,130 @@
+% Parameter recovery for Sutton K1 combined model
+
+%%
+clear;
+close all;
+addpath('..');
+
+%%
+
+% example data (to get contingencies etc)
+sub_data = readtable('..\STE_data\10369536_A_Threat.csv');
+
+% Contingency space
+cue = sub_data.Cue_idx;
+cue(cue==0) = -1; % balanced contrast coding for the "happy bias"
+outcome = sub_data.Outcome_p_sad/100;
+u_al = 1 - (0.5*(1+cue)-cue.*outcome);
+state = double(sub_data.Cue_idx == sub_data.Outcome_idx);
+
+sub_data.u_al = u_al;
+sub_data.state=state;
+sub_data.p_sad=outcome;
+
+
+% Responses
+sub_data.logRT = log(sub_data.Response_RT);
+sub_data.resp_state = double(sub_data.Cue_idx == sub_data.Response_idx);
+
+% model input
+% u = [sub_data.u_al, cue];
+% y = [sub_data.resp_state, sub_data.logRT];%, sub_data.Confidence_idx];
+
+u = sub_data.state;
+y = sub_data.resp_state;
+
+
+%% Get configuration structures
+[prc_config, obs_config] = STE_SuttonK1_config;
+
+% optimisation algorithm
+optim_config     = tapas_quasinewton_optim_config();
+optim_config.nRandInit = 10; % Annoying but better chance of fitting
+
+
+%% Run parameter recovery
+
+% number of iterations
+N=100;
+
+% Parameters to recover
+prc_param_names = {'mu'};
+prc_param_idx   = [1];
+prc_param_space = {'log'};
+obs_param_names = {'ze', 'beta0', 'beta1', 'beta2', 'sa'};
+obs_param_idx   = [1, 2, 3, 4, 5];
+obs_param_space = {'log', 'native', 'native', 'native', 'log'};
+
+% Just to be fancy
+completion_times = zeros(N, 1);
+
+% Main loop
+for i = 1:N
+    tic;
+    fprintf('\n--------------------------------\n')
+    fprintf('\nParameter recovery iteration %i\n', i);
+    if i>1
+        avg_iter_time = mean(completion_times(1:i));
+        fprintf('\tAverage iteration time = %1.2fs', avg_iter_time)
+        estimated_total_time = avg_iter_time * ((N-i) + 1);
+        fprintf('\n\tEstimated completion time = %im, %1.2fs\n\n', floor(estimated_total_time/60), rem(estimated_total_time,60));
+    end
+
+    sim = tapas_sampleModel(u, prc_config, obs_config);
+    recov.sim{i} = sim;
+    
+    % Store simulated prc params
+    for iP = 1:numel(prc_param_names)
+        param_name=prc_param_names{iP};
+        recov.(param_name).sim(i) = sim.p_prc.p(prc_param_idx(iP));
+        recov.(param_name).space = prc_param_space{iP};
+    end
+    
+    % store simulated obs params
+    for iP = 1:numel(obs_param_names)
+        param_name=obs_param_names{iP};
+        recov.(param_name).sim(i) = sim.p_obs.p(obs_param_idx(iP));
+        recov.(param_name).space = obs_param_space{iP};
+    end
+
+
+    % estimate parameters from simulated responses
+    if ~any(isnan(sim.y)) % only if no missing trials
+        try
+            est = tapas_fitModel(...
+                sim.y,...
+                sim.u,...
+                prc_config,...
+                obs_config,...
+                optim_config);
+            recov.est{i} = est; % store est (for debugging)
+
+            % get estimated parameters
+            if ~isinf(est.optim.LME)
+                % store fit metrics
+                recov.LME(i) = est.optim.LME;
+                recov.AIC(i) = est.optim.AIC;
+                recov.BIC(i) = est.optim.BIC;
+                
+                % Store estimated prc params
+                for iP = 1:numel(prc_param_names)
+                    param_name=prc_param_names{iP};
+                    recov.(param_name).est(i) = est.p_prc.p(prc_param_idx(iP));
+                end
+                
+                % store simulated obs params
+                for iP = 1:numel(obs_param_names)
+                    param_name=obs_param_names{iP};
+                    recov.(param_name).est(i) = est.p_obs.p(obs_param_idx(iP));
+                end
+
+            end
+        catch
+            fprintf('\nCannot fit')
+        end
+        completion_times(i) = toc;
+    end
+end
+save('model_suttonK1_recovery.mat', 'recov');
+recovery_figures(recov);
+
