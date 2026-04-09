@@ -51,7 +51,8 @@ ze = exp(ptrans(1));
 be0  = ptrans(2);
 be1  = ptrans(3);
 be2  = ptrans(4);
-sa   = exp(ptrans(5));
+be3 = ptrans(5);
+sa   = exp(ptrans(6));
 
 
 %% binary part of the response model
@@ -90,7 +91,6 @@ res_binary(reg) = (y-x)./sqrt(x.*(1-x));
 
 
 %% continuous part of the response model
-% Transform parameters to their native space
 
 
 % Initialize returned log-probabilities, predictions,
@@ -105,8 +105,14 @@ res_reactionTime  = NaN(n,1);
 y = r.y(:,1);
 y(r.irr) = [];
 
-u = r.u(:,1);
+% Inputs
+u_al = r.u(:,1);
+u = u_al>0.5;
+stim_noise = 0.5-abs(u_al-.5); 
+
 u(r.irr) = [];
+u_al(r.irr) = [];
+stim_noise(r.irr) = [];
 
 % Extract trajectories of interest from infStates
 da = r.traj.da; % prediction error
@@ -118,9 +124,13 @@ vhat = r.traj.vhat; % prediction
 
 
 
+al(r.irr) = [];
+da(r.irr) = [];
+
+
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-logrt = be0 +be1.*al +be2.*abs(da);
+logrt = be0 +be1.*al +be2.*abs(da) + be3.*stim_noise;
 
 % Calculate log-probabilities for non-irregular trials
 % Note: 8*atan(1) == 2*pi (this is used to guard against

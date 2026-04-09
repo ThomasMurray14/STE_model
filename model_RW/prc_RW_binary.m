@@ -33,6 +33,8 @@ al  = p(2);
 u = [0; r.u(:,1)];
 n = length(u);
 
+u = round(u); % remove perceptual uncertainty
+
 % Initialize updated quantity: value
 v  = NaN(n,1);
 da = NaN(n,1);

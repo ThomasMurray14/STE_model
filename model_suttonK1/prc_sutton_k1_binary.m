@@ -35,6 +35,8 @@ h_1    = p(4);
 u = r.u(:,1);
 n = length(u);
 
+u = round(u); % put into state space (remove ambiguity)
+
 % Initialize updated quantities
 da    = NaN(n,1);
 be    = NaN(n+1,1);

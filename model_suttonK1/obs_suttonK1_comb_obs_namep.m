@@ -40,6 +40,7 @@ pstruct.ze = pvec(1);
 pstruct.beta0 = pvec(2);
 pstruct.beta1 = pvec(3);
 pstruct.beta2 = pvec(4);
-pstruct.sa = pvec(length(pvec));
+pstruct.beta3 = pvec(5);
+pstruct.sa    = pvec(6);
 
 return;

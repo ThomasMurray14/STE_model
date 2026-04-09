@@ -25,18 +25,25 @@ obs_config.logzemu = log(1);
 obs_config.logzesa = 2;
 obs_config.beta0mu = 6.5000;
 obs_config.beta0sa = 4;
+
 obs_config.beta1mu = 0;
 obs_config.beta1sa = 4;
+
 obs_config.beta2mu = 0;
 obs_config.beta2sa = 4;
+
 obs_config.beta3mu = 0;
 obs_config.beta3sa = 4;
+
 obs_config.beta4mu = 4;
 obs_config.beta4sa = 4;
-obs_config.beta5mu = 4;
+
+obs_config.beta5mu = 0;
 obs_config.beta5sa = 4;
+
 obs_config.logsasa = log(.1);
 obs_config.logsasa = 2;
+
 obs_config = tapas_align_priors(obs_config);
 
 

@@ -32,10 +32,10 @@ sub_data.logRT = log(sub_data.Response_RT);
 sub_data.resp_state = double(sub_data.Cue_idx == sub_data.Response_idx);
 
 % model input
-% u = [sub_data.u_al, cue];
+u = [sub_data.u_al, cue];
 % y = [sub_data.resp_state, sub_data.logRT];%, sub_data.Confidence_idx];
 
-u = sub_data.state;
+% u = sub_data.state;
 y = sub_data.resp_state;
 
 

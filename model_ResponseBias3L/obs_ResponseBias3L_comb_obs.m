@@ -55,8 +55,9 @@ be0  = ptrans(3);
 be1  = ptrans(4);
 be2  = ptrans(5);
 be3  = ptrans(6);
-be4  = ptrans(7);
-sa   = exp(ptrans(8));
+be4 = ptrans(7);
+be5 = ptrans(8);
+sa   = exp(ptrans(9));
 
 
 
@@ -146,7 +147,7 @@ mu1hat = infStates(:,1,1);
 sa1hat = infStates(:,1,2);
 mu2    = infStates(:,2,3);
 sa2    = infStates(:,2,4);
-% mu3    = infStates(:,3,3);
+mu3    = infStates(:,3,3);
 
 
 % Surprise
@@ -165,7 +166,7 @@ inferv = tapas_sgm(mu2, 1).*(1 -tapas_sgm(mu2, 1)).*sa2; % transform down to 1st
 
 % Phasic volatility (aka environmental or unexpected uncertainty)
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% pv = tapas_sgm(mu2, 1).*(1-tapas_sgm(mu2, 1)).*exp(mu3); % transform down to 1st level
+pv = tapas_sgm(mu2, 1).*(1-tapas_sgm(mu2, 1)).*exp(mu3); % transform down to 1st level
 
 
 % mu1 = infStates(:,1,3);
@@ -174,10 +175,8 @@ inferv = tapas_sgm(mu2, 1).*(1 -tapas_sgm(mu2, 1)).*sa2; % transform down to 1st
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*pv;
-logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*stim_noise;
-% logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*pu; % - this works
-% in theory, but worse parameter recovery and model comparison suggests
-% scaling by stim_noise is better
+
+logrt = be0 +be1.*surp +be2.*bernv +be3.*inferv +be4.*stim_noise + be5.*pv;
 
 
 % Remove missed/"irregular" trials

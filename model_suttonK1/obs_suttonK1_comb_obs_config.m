@@ -59,14 +59,17 @@ c.logzesa = 1;
 c.beta0mu = 6.5;
 c.beta0sa = 2;
 
-% beta1
+% beta1 - learning rate
 c.beta1mu = 0;
-c.beta1sa = 2;%2;
+c.beta1sa = 2;
 
-% beta2
+% beta2 - prediction error
 c.beta2mu = 0;
 c.beta2sa = 5;
 
+% beta3 - stim noise
+c.beta3mu = 4;
+c.beta3sa = 4;
 
 % Sigma (noise term)
 c.logsamu = log(0.9);
@@ -79,6 +82,7 @@ c.priormus = [
     c.beta0mu, ...
     c.beta1mu, ...
     c.beta2mu, ...
+    c.beta3mu, ...
     c.logsamu ...
          ];
 
@@ -87,6 +91,7 @@ c.priorsas = [
     c.beta0sa, ...
     c.beta1sa, ...
     c.beta2sa, ...
+    c.beta3sa, ...
     c.logsasa ...
     ];
 

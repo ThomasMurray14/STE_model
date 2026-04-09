@@ -56,8 +56,11 @@ pstruct.beta1 = pvec(3);
 pvec(4)     = ptrans(4);         % be2
 pstruct.beta2 = pvec(4);
 
-pvec(5)     = exp(ptrans(5));    % sa (logRT model noise parameter)
-pstruct.sa  = pvec(5);
+pvec(5)     = ptrans(5);         % be3
+pstruct.beta3 = pvec(5);
+
+pvec(6)     = exp(ptrans(6));    % sa (logRT model noise parameter)
+pstruct.sa  = pvec(6);
 
 
 end

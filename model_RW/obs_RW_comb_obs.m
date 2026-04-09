@@ -101,26 +101,34 @@ logp_reactionTime = NaN(n,1);
 yhat_reactionTime = NaN(n,1);
 res_reactionTime  = NaN(n,1);
 
-% Weed irregular trials out from responses and inputs
+
+% inputs and stim noise
+u_al = r.u(:,1);
+u = u_al>0.5;
+stim_noise = 0.5-abs(u_al-.5); 
+
+% Responses
 y = r.y(:,1);
+
+% Weed irregular trials out from responses and inputs
+u_al(r.irr) = [];
+u(r.irr) = [];
+stim_noise(r.irr) = [];
 y(r.irr) = [];
 
-u = r.u(:,1);
-u(r.irr) = [];
+
 
 % Extract trajectories of interest from infStates
 da = r.traj.da; % prediction error
-be = r.traj.be; % beta - unconstrained learning rate (log gain)
-al = r.traj.al; % alpha
-h = r.traj.h; % h (not sure)
 v = r.traj.v; % posterior
 vhat = r.traj.vhat; % prediction
 
 
+da(r.irr) = [];
 
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-logrt = be0 +be1.*al +be2.*abs(da);
+logrt = be0 +be1.*abs(da) +be2.*stim_noise;
 
 % Calculate log-probabilities for non-irregular trials
 % Note: 8*atan(1) == 2*pi (this is used to guard against

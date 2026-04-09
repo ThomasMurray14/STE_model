@@ -59,17 +59,16 @@ c.logzesa = 1;
 c.beta0mu = 6.5;
 c.beta0sa = 2;
 
-% beta1 - expected state in "correct space"
-c.beta1mu = 0;
-c.beta1sa = 2;%2;
+% beta1 
+c.beta1mu = 4;
+c.beta1sa = 4;
 
-% beta2 - sahat 1 in "correct space"
-c.beta2mu = 0;
-c.beta2sa = 5;%5;
-
+% beta2 
+c.beta2mu = 4;
+c.beta2sa = 4;
 
 % Sigma (noise term)
-c.logsamu = log(0.9);
+c.logsamu = log(1);
 c.logsasa = 2;
 
 

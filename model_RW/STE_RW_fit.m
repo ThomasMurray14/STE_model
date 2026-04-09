@@ -1,0 +1,21 @@
+% Function to run parameter recovery for ResponseBias model
+
+clear; close all; clc
+addpath('../helper_functions/')
+
+
+%% Get inputs
+% example data (to get contingencies etc)
+sub_data = readtable('..\STE_data\10369536_A_Threat.csv');
+[u,y] = data_prep(sub_data);
+
+
+%% Get configuration structures
+[prc_config, obs_config] = STE_RW_config;
+optim_config     = tapas_quasinewton_optim_config(); % optimisation algorithm
+optim_config.nRandInit = 10;
+
+
+%% Fit data
+model_fits = fit_master(u, prc_config, obs_config, optim_config);
+save('model_RW_fit.mat', 'model_fits');

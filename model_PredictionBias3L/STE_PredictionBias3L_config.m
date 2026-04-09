@@ -39,7 +39,7 @@ obs_config.beta3sa = 4;
 obs_config.beta4mu = 4;
 obs_config.beta4sa = 4;
 
-obs_config.beta5mu = 4;
+obs_config.beta5mu = 0;
 obs_config.beta5sa = 4;
 
 obs_config.logsasa = log(.1);

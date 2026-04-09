@@ -49,7 +49,8 @@ ze = p(1);
 be0  = p(2);
 be1  = p(3);
 be2  = p(4);
-sa   = p(5);
+be3  = p(5);
+sa   = p(6);
 
 
 %% Run sim for binary predictions
@@ -90,7 +91,9 @@ y_binary = binornd(1, yhat_pred);
 n = size(infStates,1);
 
 % Inputs
-u = r.u(:,1);
+u_al = r.u(:,1);
+u = u_al>0.5;
+stim_noise = 0.5-abs(u_al-.5); 
 
 % Extract trajectories of interest from infStates
 da = r.traj.da; % prediction error
@@ -103,7 +106,7 @@ vhat = r.traj.vhat; % prediction
 
 % Calculate predicted log-reaction time
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-logrt = be0 +be1.*al +be2.*abs(da);
+logrt = be0 +be1.*al +be2.*abs(da) +be3.*stim_noise;
 
 % Initialize random number generator
 if isnan(r.c_sim.seed)
