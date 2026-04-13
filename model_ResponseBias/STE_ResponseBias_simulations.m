@@ -8,7 +8,7 @@
 %%
 clear;
 close all;
-addpath('..');
+addpath('../helper_functions');
 
 
 %% 

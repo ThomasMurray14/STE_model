@@ -1,5 +1,5 @@
 % Script to simulate behavioural responses and RTs from a given model,
-% using best fitting parameters
+% using each subject's fit parameters
 
 
 % Specify model
@@ -19,18 +19,6 @@ fits(ismember([fits.ID], excluded_IDs)) = [];
 safe_fits = fits(strcmp({fits.condition}, 'Safe'));
 threat_fits = fits(strcmp({fits.condition}, 'Threat'));
 
-% Get parameters
-safe_prc_p = cell2mat(arrayfun(@(x) x.est.p_prc.p, safe_fits, 'UniformOutput', false)');
-safe_obs_p = cell2mat(arrayfun(@(x) x.est.p_obs.p, safe_fits, 'UniformOutput', false)');
-threat_prc_p = cell2mat(arrayfun(@(x) x.est.p_prc.p, threat_fits, 'UniformOutput', false)');
-threat_obs_p = cell2mat(arrayfun(@(x) x.est.p_obs.p, threat_fits, 'UniformOutput', false)');
-
-% Get mean parameters
-safe_prc_p_mean = mean(safe_prc_p, 1);
-safe_obs_p_mean = mean(safe_obs_p, 1);
-threat_prc_p_mean = mean(threat_prc_p, 1);
-threat_obs_p_mean = mean(threat_obs_p, 1);
-
 % Get functions for this model
 f = str2func(['STE_', model, '_config']);
 [prc_config, obs_config] = f();
@@ -39,39 +27,53 @@ f = str2func(['STE_', model, '_config']);
 sub_data = readtable('..\STE_data\10369536_A_Threat.csv');
 [u,~] = data_prep(sub_data);
 
-% Simulate
-N=200;
-[safe_resp, safe_logRT, threat_resp, threat_logRT] = deal(zeros(size(u,1), N));
+% Get parameters
+safe_prc_p = cell2mat(arrayfun(@(x) x.est.p_prc.p, safe_fits, 'UniformOutput', false)');
+safe_obs_p = cell2mat(arrayfun(@(x) x.est.p_obs.p, safe_fits, 'UniformOutput', false)');
+threat_prc_p = cell2mat(arrayfun(@(x) x.est.p_prc.p, threat_fits, 'UniformOutput', false)');
+threat_obs_p = cell2mat(arrayfun(@(x) x.est.p_obs.p, threat_fits, 'UniformOutput', false)');
 
-for i = 1:N
-    % Simulare safe
+% Preallocate
+[safe_resp, safe_logRT]     = deal(zeros(size(u,1), numel(safe_fits)));
+[threat_resp, threat_logRT] = deal(zeros(size(u,1), numel(threat_fits)));
+
+% Simulate safe
+for i = 1:numel(safe_fits)
+
+    % Simulate
     sim_safe = tapas_simModel(u,...
         prc_config.model,...
-        safe_prc_p_mean,...
+        safe_prc_p(i, :),...
         obs_config.model,...
-        safe_obs_p_mean);
+        safe_obs_p(i, :));
+
+    % Store
     resp_state_safe = sim_safe.y(:,1);
     safe_resp(:, i) = (u(:,2) == 1 & resp_state_safe == 1) + (u(:,2) == -1 & resp_state_safe == 0); % 1=Sad,0=Happy
     safe_logRT(:, i) = sim_safe.y(:,2);
-    
-    % Simulate threat
+end
+
+% Simulate threat
+for i = 1:numel(safe_fits)
+
+    % Simulate
     sim_threat = tapas_simModel(u,...
         prc_config.model,...
-        threat_prc_p_mean,...
+        threat_prc_p(i, :),...
         obs_config.model,...
-        threat_obs_p_mean);
+        threat_obs_p(i, :));
+
+    % Store
     resp_state_threat = sim_threat.y(:,1);
     threat_resp(:, i) = (u(:,2) == 1 & resp_state_threat == 1) + (u(:,2) == -1 & resp_state_threat == 0); % 1=Sad,0=Happy
     threat_logRT(:, i) = sim_threat.y(:,2);
 end
-
 
 % Get data indices
 expected_idx = strcmp(sub_data.Expectedness, 'E');
 unexpected_idx = strcmp(sub_data.Expectedness, 'UE');
 stable_idx = sub_data.Block_N == 1;
 volatile_idx = sub_data.Block_N > 1;
-
 
 %% logRT, expectedness
 
@@ -131,4 +133,12 @@ set(gca, ...
     'XTick', [0, 1], ...
     'XTickLabels', {'Stable', 'Volatile'});
 ylabel('logRT');
+
+
+
+
+
+
+
+
 
