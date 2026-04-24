@@ -15,7 +15,7 @@ prc_config.logalsa    = 2;
 
 prc_config = tapas_align_priors(prc_config);
 
-obs_config.logzemu = log(1);
+obs_config.logzemu = log(5);%log(1);
 obs_config.logzesa = 2;
 
 obs_config.beta0mu = 6.5000;

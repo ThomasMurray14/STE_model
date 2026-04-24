@@ -15,7 +15,7 @@ prc_config = tapas_align_priors(prc_config);
 % Response model
 obs_config = obs_PerceptualBias_comb_obs_config;
 
-obs_config.logzemu = log(1);
+obs_config.logzemu = log(5);%log(1);
 obs_config.logzesa = 2;
 obs_config.beta0mu = 6.5000;
 obs_config.beta0sa = 4;

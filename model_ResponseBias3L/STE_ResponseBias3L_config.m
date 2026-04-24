@@ -20,7 +20,7 @@ prc_config.logkasa(2) = 0; % fix coupling to 1
 
 prc_config = tapas_align_priors(prc_config);
 
-obs_config.logzeta0mu = log(1);
+obs_config.logzeta0mu = log(5);%log(1);
 obs_config.logzeta0sa = 2;
 
 obs_config.zeta1mu = 0; % Response bias towards sad

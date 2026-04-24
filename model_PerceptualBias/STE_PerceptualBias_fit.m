@@ -17,4 +17,4 @@ optim_config.nRandInit = 5;
 
 %% Fit data
 model_fits = fit_master(u, prc_config, obs_config, optim_config);
-save('model_PerceptualBias_fit.mat', 'model_fits');
+save('model_PerceptualBias_fit2.mat', 'model_fits');

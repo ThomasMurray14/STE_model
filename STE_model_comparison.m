@@ -3,7 +3,9 @@
 
 % Name models as folder names
 model_names = {'PerceptualBias', 'PerceptualBias3L', 'PredictionBias', 'PredictionBias3L',...
-    'ResponseBias', 'ResponseBias3L', 'RW', 'SuttonK1'};
+    'ResponseBias', 'ResponseBias3L'};%, 'RW', 'SuttonK1'};
+% model_names = {'PerceptualBias3L', 'PredictionBias3L', 'ResponseBias3L'};
+
 N_models = numel(model_names);
 
 %% Load model fits
@@ -43,6 +45,6 @@ LMEs_valid = LMEs(~any(~valid, 2), :);
 
 %% Model comparison
 options.modelNames = model_names;
-[posterior,out] = VBA_groupBMC(LMEs', options);
+[posterior,out] = VBA_groupBMC(LMEs_valid', options);
 
 
