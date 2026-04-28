@@ -26,7 +26,7 @@ for iSub = 1:numel(IDs)
         i_fit = fits([fits.ID] == IDs(iSub) & strcmp({fits.condition}, conds{iCond}));
 
         % if this ID/condition has been estimated
-        if ~isempty(i_fit)
+        if ~isempty(i_fit.est)
 
             % Loop parameters
             for iP = 1:numel(p_names)
@@ -34,6 +34,14 @@ for iSub = 1:numel(IDs)
 
                 if strcmp(p_space{iP}, 'log')
                     S(iSub).([conds{iCond}, '_log', p_names{iP}]) = log(i_fit.est.(['p_', p_mod{iP}]).p(p_idx(iP)));
+                end
+            end
+
+        else % fill with NaN
+            for iP = 1:numel(p_names)
+                S(iSub).([conds{iCond}, '_', p_names{iP}]) = NaN;
+                if strcmp(p_space{iP}, 'log')
+                    S(iSub).([conds{iCond}, '_log', p_names{iP}]) = NaN;
                 end
             end
 
