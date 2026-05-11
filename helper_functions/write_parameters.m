@@ -1,7 +1,7 @@
 % script to write parameter estimates to csv
 
 model = 'ResponseBias';
-fits = importdata(['..\model_', model, '\model_', model, '_fit.mat']);
+fits = importdata(['..\model_', model, '\model_', model, '_fit2.mat']);
 
 % Specify parameters
 p_names = {'om2', 'al', 'zeta0', 'zeta1', 'beta0', 'beta1', 'beta2', 'beta3', 'beta4', 'sa'};
@@ -75,6 +75,6 @@ for iP = 1:numel(p_names)
 end
 
 % Write table
-writetable(T, ['../full_analysis/', model, '_params.csv']);
+writetable(T, ['../full_analysis/', model, '_params2.csv']);
 
 

@@ -7,6 +7,9 @@ obs_config = obs_PredictionBias_comb_obs_config(); % response model
 prc_config.ommu(2)    = -2;
 prc_config.omsa(2)    = 4;
 
+prc_config.ommu(3)    = 0;
+prc_config.omsa(3)    = 0;
+
 prc_config.rhomu(2)   = 0; % bias towards sad - does work in terms of # responses, but psychometric functions look wrong
 prc_config.rhosa(2)   = 4;
 

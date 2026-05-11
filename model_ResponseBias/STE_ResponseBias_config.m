@@ -6,6 +6,9 @@ obs_config = obs_ResponseBias_comb_obs_config(); % response model
 prc_config.ommu(2)    = -2;
 prc_config.omsa(2)    = 4;
 
+prc_config.ommu(3)    = 0;
+prc_config.omsa(3)    = 0;
+
 prc_config.rhomu(2)   = 0; % perceptual bias towards sad
 prc_config.rhosa(2)   = 0; %% IMPORTANT TO FIX IN THIS SETUP
 

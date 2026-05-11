@@ -10,7 +10,13 @@ N_models = numel(model_names);
 
 %% Load model fits
 for iM = 1:N_models
-    models(iM).model_fits = importdata(['model_', model_names{iM}, '\model_', model_names{iM}, '_fit.mat']);
+
+    if strcmp(model_names{2}(end-1:end), '3L')
+        models(iM).model_fits = importdata(['model_', model_names{iM}, '\model_', model_names{iM}, '_fit.mat']);
+    else
+        models(iM).model_fits = importdata(['model_', model_names{iM}, '\model_', model_names{iM}, '_fit2.mat']);
+    end
+    % models(iM).model_fits = importdata(['model_', model_names{iM}, '\model_', model_names{iM}, '_fit.mat']);
 end
 
 %% Load excluded participants

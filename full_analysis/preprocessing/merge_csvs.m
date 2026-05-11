@@ -5,7 +5,7 @@ attention_check = readtable('attention_check.csv');
 demographics = readtable('demographics.csv');
 transdiagnostic_factors = readtable('predictedFactorScores.csv');
 VAS = readtable('state_anxiety_VAS.csv');
-model_params = readtable('..\ResponseBias_params.csv');
+model_params = readtable('..\ResponseBias_params2.csv');
 
 % Make sure all have 'ID'
 psychometric_functions = renamevars(psychometric_functions, 'Var1', 'ID');
@@ -64,7 +64,7 @@ T.N_missing_threat_include = T.Threat_N_missed < 20;
 T.Include = T.Attention_check_include & T.N_missing_safe_include & T.N_missing_threat_include;
 
 % save
-writetable(T, '../fits.csv');
+writetable(T, '../fits2.csv');
 
 
 
