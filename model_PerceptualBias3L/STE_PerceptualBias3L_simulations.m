@@ -76,7 +76,7 @@ sim_2_bias = tapas_simModel(u,...
 
 sim_sad = (sub_data.Cue_idx == 1 & sim_2_bias.y(:,1) == 1) + (sub_data.Cue_idx == 0 & sim_2_bias.y(:,1) == 0);
 N_sad = sum(sim_sad);
-visualise_psychometric(u, sub_data, 'prc_PerceptualBias3L_ehgf_binary_pu_tbt', prc_params, 'obs_PerceptualBias3L_comb_obs', obs_params, 20)
+% visualise_psychometric(u, sub_data, 'prc_PerceptualBias3L_ehgf_binary_pu_tbt', prc_params, 'obs_PerceptualBias3L_comb_obs', obs_params, 20)
 
 
 

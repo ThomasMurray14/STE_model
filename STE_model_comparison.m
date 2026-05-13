@@ -2,16 +2,17 @@
 
 
 % Name models as folder names
-model_names = {'PerceptualBias', 'PerceptualBias3L', 'PredictionBias', 'PredictionBias3L',...
+model_names = {'PerceptualBias', 'uHGFPerceptualBias3L', 'PredictionBias', 'PredictionBias3L',...
     'ResponseBias', 'ResponseBias3L'};%, 'RW', 'SuttonK1'};
 % model_names = {'PerceptualBias3L', 'PredictionBias3L', 'ResponseBias3L'};
+
 
 N_models = numel(model_names);
 
 %% Load model fits
 for iM = 1:N_models
 
-    if strcmp(model_names{2}(end-1:end), '3L')
+    if strcmp(model_names{iM}(end-1:end), '3L')
         models(iM).model_fits = importdata(['model_', model_names{iM}, '\model_', model_names{iM}, '_fit.mat']);
     else
         models(iM).model_fits = importdata(['model_', model_names{iM}, '\model_', model_names{iM}, '_fit2.mat']);
