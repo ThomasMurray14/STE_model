@@ -6,7 +6,10 @@ function model_fits = fit_master_parallel(u, prc_config, obs_config, optim_confi
 %   prc_config    - perceptual model config
 %   obs_config    - response model config
 %   optim_config  - optimisation algorithm config
-%
+%   n_workers     - number of parallel workers
+% 
+% 
+% Would be nice to figure out a way of visualising completion.....
 
 STE_dir = dir('..\STE_data\*.csv');
 N_files = numel(STE_dir);
